@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>margins</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <button id="sidebarToggle" class="icon-button" type="button" aria-label="Show or hide the files" aria-expanded="true" title="Files">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M1.75 2.5h12.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5Zm0 5h12.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5Zm0 5h12.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5Z"/></svg>
+      </button>
+      <span class="wordmark">margins</span>
+      <span id="rootName" class="root-name"></span>
+    </div>
+    <nav class="top-actions" aria-label="Find">
+      <button id="quickOpenButton" class="pill" type="button" title="Open a file by name">
+        Open file <kbd class="shortcut" data-mod>P</kbd>
+      </button>
+      <button id="searchButton" class="pill" type="button" title="Search every file">
+        Search <kbd class="shortcut" data-mod data-shift>F</kbd>
+      </button>
+      <button id="helpButton" class="icon-button" type="button" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)">?</button>
+    </nav>
+  </header>
+
+  <div class="layout">
+    <aside id="sidebar" class="sidebar" aria-label="Files">
+      <div class="sidebar-head">
+        <span>Files</span>
+        <button id="newFileButton" class="text-button" type="button" title="Create a new file">+ New</button>
+      </div>
+      <ul id="tree" class="tree" role="tree" aria-label="Folder contents"></ul>
+      <p id="treeNote" class="tree-note hidden"></p>
+    </aside>
+
+    <main id="main" class="main">
+      <div id="docBar" class="doc-bar hidden">
+        <nav id="breadcrumbs" class="breadcrumbs" aria-label="Where this file is"></nav>
+        <div class="doc-actions">
+          <span id="saveState" class="save-state" role="status" aria-live="polite"></span>
+          <button id="editButton" class="button" type="button" title="Edit this file (e)">Edit</button>
+          <button id="saveButton" class="button primary hidden" type="button">Save</button>
+          <button id="doneButton" class="button hidden" type="button">Done</button>
+        </div>
+      </div>
+
+      <div id="banner" class="banner hidden" role="alert">
+        <span id="bannerText"></span>
+        <span class="banner-actions">
+          <button id="bannerPrimary" class="button" type="button"></button>
+          <button id="bannerSecondary" class="button" type="button"></button>
+        </span>
+      </div>
+
+      <div id="viewer" class="viewer">
+        <article id="document" class="markdown-body"></article>
+      </div>
+
+      <div id="editor" class="editor hidden">
+        <textarea id="source" class="source" spellcheck="false" aria-label="File contents"></textarea>
+        <div id="preview" class="preview markdown-body" aria-label="Preview"></div>
+      </div>
+    </main>
+
+    <aside id="context" class="context hidden" aria-label="About this file">
+      <section id="outlineSection" class="context-section hidden">
+        <h2>On this page</h2>
+        <ol id="outline" class="outline"></ol>
+      </section>
+      <section id="backlinksSection" class="context-section hidden">
+        <h2>Linked from <span id="backlinkCount" class="count"></span></h2>
+        <ul id="backlinks" class="backlinks"></ul>
+      </section>
+    </aside>
+  </div>
+
+  <dialog id="quickOpen" class="palette" aria-label="Open a file">
+    <input id="quickOpenInput" class="palette-input" type="text" placeholder="Type a file name…" autocomplete="off" spellcheck="false">
+    <ul id="quickOpenResults" class="palette-results" role="listbox"></ul>
+  </dialog>
+
+  <dialog id="search" class="palette palette-wide" aria-label="Search every file">
+    <input id="searchInput" class="palette-input" type="text" placeholder="Search every file…" autocomplete="off" spellcheck="false">
+    <p id="searchSummary" class="palette-summary"></p>
+    <ul id="searchResults" class="palette-results" role="listbox"></ul>
+  </dialog>
+
+  <dialog id="newFile" class="palette" aria-label="Create a file">
+    <form id="newFileForm" method="dialog">
+      <label class="palette-label" for="newFileInput">New file, relative to the folder</label>
+      <input id="newFileInput" class="palette-input" type="text" placeholder="notes/idea.md" autocomplete="off" spellcheck="false">
+      <p id="newFileError" class="palette-error hidden"></p>
+    </form>
+  </dialog>
+
+  <dialog id="help" class="palette" aria-labelledby="helpTitle">
+    <h2 id="helpTitle" class="help-title">Keyboard</h2>
+    <dl class="help-keys">
+      <dt><kbd class="shortcut" data-mod>P</kbd></dt><dd>Open a file by name</dd>
+      <dt><kbd class="shortcut" data-mod data-shift>F</kbd></dt><dd>Search every file</dd>
+      <dt><kbd>e</kbd></dt><dd>Edit this file</dd>
+      <dt><kbd class="shortcut" data-mod>S</kbd></dt><dd>Save</dd>
+      <dt><kbd>Esc</kbd></dt><dd>Close a panel, or stop editing</dd>
+      <dt><kbd>[</kbd> <kbd>]</kbd></dt><dd>Back and forward</dd>
+      <dt><kbd>?</kbd></dt><dd>This list</dd>
+    </dl>
+    <p class="help-note">Links between files work the way GitHub reads them — <code>[text](other.md)</code> — and the way Obsidian does — <code>[[Other]]</code>. Nothing is written into this folder except the files you save.</p>
+  </dialog>
+
+  <script src="vendor/marked.js"></script>
+  <script src="vendor/purify.js"></script>
+  <script src="links.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

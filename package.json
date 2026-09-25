@@ -1,0 +1,51 @@
+{
+  "name": "margins",
+  "version": "0.1.0",
+  "description": "Open a folder of markdown in your browser from the terminal. Browse, read, edit, search, and follow [[wikilinks]] and backlinks. No vault, no config, nothing written but what you save.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node bin/margins.js",
+    "test": "node --test",
+    "test:watch": "node --test --watch"
+  },
+  "keywords": [
+    "markdown",
+    "notes",
+    "obsidian",
+    "wikilinks",
+    "backlinks",
+    "markdown-editor",
+    "markdown-viewer",
+    "docs",
+    "cli",
+    "local-first",
+    "knowledge-base",
+    "zettelkasten"
+  ],
+  "author": "Dheeraj Jha",
+  "license": "MIT",
+  "dependencies": {
+    "dompurify": "^3.4.16",
+    "marked": "^18.0.14"
+  },
+  "bin": {
+    "margins": "bin/margins.js"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "public/",
+    "server.js"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dheerajjha/margins.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dheerajjha/margins/issues"
+  },
+  "homepage": "https://github.com/dheerajjha/margins#readme"
+}

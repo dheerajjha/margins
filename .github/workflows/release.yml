@@ -1,0 +1,97 @@
+# Publishes to npm on a v* tag, via trusted publishing (OIDC).
+#
+# There is no npm token anywhere in this repository. npm verifies the workflow
+# identity below and mints a short-lived credential for that one publish. The
+# trust relationship is registered against the package:
+#
+#   npm trust github margins --file release.yml --repository dheerajjha/margins
+#
+# Three things must keep matching that record or the publish is rejected: the
+# repository, this file's name, and the absence of an environment. Renaming
+# this file is therefore a breaking change.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  # Never publish something the suite has not seen. A tag is cheap to re-cut;
+  # a published npm version can be deprecated but not replaced.
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm test
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write   # this IS the credential: OIDC identity + provenance
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+
+      # Trusted publishing needs npm >= 11.5.1, and an older one does not say
+      # so: it looks for a token, finds none, and fails with a bare 404.
+      - name: Ensure npm supports trusted publishing
+        run: |
+          npm install -g npm@latest
+          node -e '
+            const v = require("child_process").execSync("npm --version").toString().trim();
+            const [maj, min, pat] = v.split(".").map(Number);
+            const ok = maj > 11 || (maj === 11 && (min > 5 || (min === 5 && pat >= 1)));
+            if (!ok) { console.error(`::error::npm ${v} cannot use trusted publishing (need >= 11.5.1)`); process.exit(1); }
+            console.log(`npm ${v} supports trusted publishing`);
+          '
+
+      - run: npm ci
+
+      # The tarball is built from the `files` allowlist, so a file that exists
+      # in git but is not listed is not shipped -- and fails only for whoever
+      # installs it. Check every lib module and page asset made it in.
+      - name: Verify the tarball ships what margins needs
+        run: |
+          npm pack --silent
+          tar -tzf margins-*.tgz > /tmp/files.txt
+          for module in lib/*.js public/*; do
+            grep -qx "package/$module" /tmp/files.txt || { echo "::error::$module missing from the tarball"; exit 1; }
+          done
+          for required in package/bin/margins.js package/server.js; do
+            grep -qx "$required" /tmp/files.txt || { echo "::error::$required missing from the tarball"; exit 1; }
+          done
+          echo "tarball verified ($(wc -l < /tmp/files.txt) entries)"
+
+      # Install the tarball into a clean prefix and run it, including loading
+      # the two browser builds the server has to find inside node_modules.
+      - name: Smoke-test the packed package
+        run: |
+          mkdir -p /tmp/smoke && cd /tmp/smoke && npm init -y --silent > /dev/null
+          npm install --silent "$GITHUB_WORKSPACE"/margins-*.tgz
+          ./node_modules/.bin/margins --version
+          mkdir notes && echo "# Hello" > notes/README.md
+          ./node_modules/.bin/margins notes --no-open --port 4699 &
+          for i in $(seq 1 20); do curl -sf http://127.0.0.1:4699/api/info && break; sleep 0.5; done
+          curl -sf http://127.0.0.1:4699/vendor/marked.js > /dev/null
+          curl -sf http://127.0.0.1:4699/vendor/purify.js > /dev/null
+          curl -sf "http://127.0.0.1:4699/api/file?path=README.md" | grep -q Hello
+          kill %1
+
+      - run: npm publish --provenance --access public
