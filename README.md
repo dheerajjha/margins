@@ -1,27 +1,27 @@
-# margins
+# inkd
 
-[![CI](https://github.com/dheerajjha/margins/actions/workflows/ci.yml/badge.svg)](https://github.com/dheerajjha/margins/actions/workflows/ci.yml)
+[![CI](https://github.com/dheerajjha/inkd/actions/workflows/ci.yml/badge.svg)](https://github.com/dheerajjha/inkd/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](package.json)
 [![Tests](https://img.shields.io/badge/tests-80-brightgreen.svg)](test/)
 [![Dependencies](https://img.shields.io/badge/dependencies-2-brightgreen.svg)](package.json)
 
-Open any folder of markdown in your browser, from the terminal. Browse it as a
-tree, read it rendered, follow the links between files — `[[wikilinks]]`
-included — edit with a live preview, and search all of it. Close the tab when
-you are done and it stops.
+**inkd** (as in *inked*) opens any folder of markdown in your browser, from the
+terminal. Browse it as a tree, read it rendered, follow the links between files
+— `[[wikilinks]]` included — edit with a live preview, and search all of it.
+Close the tab when you are done and it stops.
 
 ```bash
-npm install -g margins
+npm install -g inkd
 
 cd ~/notes
-margins
+inkd
 ```
 
 No vault to create, no app to install, no account, nothing to configure. The
-only thing margins ever writes into the folder is a file you save.
+only thing inkd ever writes into the folder is a file you save.
 
-![A folder of team notes open in margins: a file tree on the left, a rendered note in the middle with wikilinks and a diagram, and on the right the note's outline and the notes that link to it](docs/screenshot-reading.png)
+![A folder of team notes open in inkd: a file tree on the left, a rendered note in the middle with wikilinks and a diagram, and on the right the note's outline and the notes that link to it](docs/screenshot-reading.png)
 
 ## Why
 
@@ -37,7 +37,7 @@ twenty years. What is missing is a good way to *read* one.
 - **Markdown preview servers** — markserv, grip, md-fileserver — show a folder
   in the browser but only read it, and know nothing of `[[wikilinks]]`.
 
-margins sits in between: the folder tree and linked notes of Obsidian, the
+inkd sits in between: the folder tree and linked notes of Obsidian, the
 lightness of a single-file editor, started from the terminal in whatever folder
 you are standing in — your notes, a project's `docs/`, a colleague's repository.
 
@@ -74,7 +74,7 @@ It follows your system's light or dark setting.
 ## Usage
 
 ```
-margins [path] [options]
+inkd [path] [options]
 ```
 
 `path` is a folder, or a file inside the folder to open first. It defaults to
@@ -90,13 +90,13 @@ one — the page you would start from on GitHub.
 | `-h, --help` | Print the usage. |
 
 ```bash
-margins                     # the folder you are in
-margins ~/notes             # another one
-margins docs/guide.md       # a repository's docs, opened on one page
-npx margins                 # without installing it
+inkd                     # the folder you are in
+inkd ~/notes             # another one
+inkd docs/guide.md       # a repository's docs, opened on one page
+npx inkd                 # without installing it
 ```
 
-margins stops when you close its last tab. A reload, or a second tab, keeps it
+inkd stops when you close its last tab. A reload, or a second tab, keeps it
 running; so does never opening a tab at all, if you would rather open the
 address yourself later. `Ctrl+C` stops it any time.
 
@@ -131,7 +131,7 @@ are not counted as links to anything.
 
 ## Safety
 
-margins is meant to be pointed at folders you did not write — a cloned
+inkd is meant to be pointed at folders you did not write — a cloned
 repository, a colleague's notes — and it can write files. So it assumes the
 folder might be hostile, and so might other websites open in the same browser.
 
@@ -139,7 +139,7 @@ folder might be hostile, and so might other websites open in the same browser.
   [DOMPurify](https://github.com/cure53/DOMPurify): no scripts, no event
   handlers, no `javascript:` links, no forms, frames, embedded SVG or inline
   styles. A strict Content-Security-Policy is the second lock: the page runs no
-  script margins did not ship itself. Images are served in a sandbox, so even an
+  script inkd did not ship itself. Images are served in a sandbox, so even an
   SVG with a script in it only draws.
 - **Nothing outside the folder can be read or written** — not with `..`, not
   with an absolute path, and not through a symlink inside the folder that points
@@ -166,7 +166,7 @@ tries every trick above, in a real browser, before each release.
 It is deliberately small. There is no graph view, no plugins, no sync, no
 database and no index on disk — search and backlinks read the files each time,
 which is fast for a folder of notes and slow for a folder of hundreds of
-thousands of files, where margins stops at 20,000 and says so. Code blocks are
+thousands of files, where inkd stops at 20,000 and says so. Code blocks are
 not syntax-highlighted yet. `![[Note]]` embeds are shown as links, not inlined.
 Renaming and deleting are left to your file manager or editor. `.gitignore` is
 not read.
@@ -179,7 +179,7 @@ not read.
 | Obsidian | yes | yes | yes | yes | — | a `.obsidian` folder |
 | markserv | yes | — | yes | — | yes | nothing |
 | SilverBullet | yes | yes | yes | yes | runs as a server | an index |
-| **margins** | yes | yes | yes | yes | yes | only what you save |
+| **inkd** | yes | yes | yes | yes | yes | only what you save |
 
 ## HTTP API
 
@@ -197,15 +197,15 @@ The page is a client of this; nothing is hidden from you.
 | `GET /api/search?q=` | Matches across every text file |
 | `GET /api/backlinks?path=` | What links to a file |
 | `GET /raw/<path>` | An image from the folder |
-| `GET /api/alive` | Held open by the page; when the last one closes, margins stops |
+| `GET /api/alive` | Held open by the page; when the last one closes, inkd stops |
 
 ## Development
 
 ```bash
-git clone https://github.com/dheerajjha/margins.git
-cd margins && npm install
+git clone https://github.com/dheerajjha/inkd.git
+cd inkd && npm install
 npm test                    # 80 tests
-node bin/margins.js ~/notes
+node bin/inkd.js ~/notes
 ```
 
 The server uses no packages at all — Node's own `http`, `fs` and `path`. The

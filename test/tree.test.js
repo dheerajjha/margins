@@ -41,7 +41,7 @@ test('entries carry their kind and their path from the root', async t => {
 });
 
 test('a symlink that leads out of the folder is not listed', async t => {
-  // Listing what margins would then refuse to open is a trap.
+  // Listing what inkd would then refuse to open is a trap.
   const outside = await makeFolder({ 'x.md': '' });
   const root = await makeFolder({ 'a.md': '', 'real/b.md': '' });
   t.after(async () => { await removeFolder(root); await removeFolder(outside); });

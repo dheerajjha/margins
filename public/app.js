@@ -1,8 +1,8 @@
-/* global marked, DOMPurify, MarginsLinks */
+/* global marked, DOMPurify, InkdLinks */
 'use strict';
 
 /**
- * The margins page. One folder, a tree of its files, and whichever one is
+ * The inkd page. One folder, a tree of its files, and whichever one is
  * open -- rendered, or being edited.
  *
  * One rule runs through all of it: the only HTML that reaches the page is
@@ -125,7 +125,7 @@ function shortcutFor(key, modifiers, targetTag) {
 
 /** Titles made unique within one document: "Notes", "Notes-1", "Notes-2". */
 function uniqueSlug(text, used) {
-  var base = MarginsLinks.slugify(text) || 'section';
+  var base = InkdLinks.slugify(text) || 'section';
   var slug = base;
   var n = 1;
   while (used.has(slug)) slug = base + '-' + n++;
@@ -181,7 +181,7 @@ function refreshFiles() {
   return api('api/files').then(function (result) {
     state.files = result.files;
     state.paths = result.files.map(function (file) { return file.path; });
-    state.index = MarginsLinks.buildIndex(state.paths);
+    state.index = InkdLinks.buildIndex(state.paths);
     state.filesTruncated = result.truncated;
     var note = $('treeNote');
     note.textContent = result.truncated
@@ -197,7 +197,7 @@ function refreshFiles() {
  * [[wikilinks]] for marked. The token only records what was written; which
  * file it means is decided after sanitising, against the folder's file list,
  * so the markup this produces never contains a resolved path from anywhere
- * but margins itself.
+ * but inkd itself.
  */
 var wikilinkExtension = {
   name: 'wikilink',
@@ -212,7 +212,7 @@ var wikilinkExtension = {
     return { type: 'wikilink', raw: match[0], embed: Boolean(match[1]), inner: match[2] };
   },
   renderer: function (token) {
-    var parsed = MarginsLinks.parseWikilink(token.inner);
+    var parsed = InkdLinks.parseWikilink(token.inner);
     var label = parsed.alias || (parsed.heading && !parsed.target ? parsed.heading : parsed.target) + (parsed.heading && parsed.target && !parsed.alias ? ' › ' + parsed.heading : '');
     var escape = function (text) {
       return String(text).replace(/[&<>"']/g, function (c) {
@@ -256,8 +256,8 @@ function renderMarkdown(markdown, fromPath, target) {
 
 function adjustRendered(root, fromPath) {
   root.querySelectorAll('a[data-wikilink]').forEach(function (anchor) {
-    var parsed = MarginsLinks.parseWikilink(anchor.getAttribute('data-wikilink'));
-    var path = parsed.target ? MarginsLinks.resolveWikilink(parsed.target, fromPath, state.index) : fromPath;
+    var parsed = InkdLinks.parseWikilink(anchor.getAttribute('data-wikilink'));
+    var path = parsed.target ? InkdLinks.resolveWikilink(parsed.target, fromPath, state.index) : fromPath;
     var embed = anchor.hasAttribute('data-embed');
 
     if (!path) {
@@ -286,12 +286,12 @@ function adjustRendered(root, fromPath) {
   root.querySelectorAll('a[href]:not([data-wikilink])').forEach(function (anchor) {
     var href = anchor.getAttribute('href');
     if (href.indexOf('#/') === 0) return; // already an in-page address
-    if (MarginsLinks.isExternal(href)) {
+    if (InkdLinks.isExternal(href)) {
       anchor.target = '_blank';
       anchor.rel = 'noopener noreferrer';
       return;
     }
-    var resolved = MarginsLinks.resolveHref(fromPath, href);
+    var resolved = InkdLinks.resolveHref(fromPath, href);
     if (!resolved) {
       anchor.classList.add('link-broken');
       anchor.title = 'This link points outside the folder.';
@@ -304,8 +304,8 @@ function adjustRendered(root, fromPath) {
   root.querySelectorAll('img[src]').forEach(function (img) {
     var src = img.getAttribute('src');
     img.loading = 'lazy';
-    if (src.indexOf('raw/') === 0 || src.indexOf('data:') === 0 || MarginsLinks.isExternal(src)) return;
-    var resolved = MarginsLinks.resolveHref(fromPath, src);
+    if (src.indexOf('raw/') === 0 || src.indexOf('data:') === 0 || InkdLinks.isExternal(src)) return;
+    var resolved = InkdLinks.resolveHref(fromPath, src);
     if (resolved) img.src = rawUrl(resolved.path);
     else img.removeAttribute('src');
   });
@@ -349,13 +349,13 @@ function loadLevel(dirPath) {
 
 function saveExpanded() {
   try {
-    localStorage.setItem('margins:expanded:' + (state.info && state.info.root), JSON.stringify(Array.from(state.expanded)));
+    localStorage.setItem('inkd:expanded:' + (state.info && state.info.root), JSON.stringify(Array.from(state.expanded)));
   } catch (error) { /* private window: the tree just starts collapsed */ }
 }
 
 function restoreExpanded() {
   try {
-    var saved = JSON.parse(localStorage.getItem('margins:expanded:' + state.info.root) || '[]');
+    var saved = JSON.parse(localStorage.getItem('inkd:expanded:' + state.info.root) || '[]');
     if (Array.isArray(saved)) saved.forEach(function (path) { state.expanded.add(path); });
   } catch (error) { /* nothing saved, or storage blocked */ }
 }
@@ -519,7 +519,7 @@ function updateDocBar() {
 function renderCurrent(fragment) {
   var file = state.current;
   var doc = $('document');
-  document.title = (file.path ? file.path.split('/').pop() + ' — ' : '') + (state.info ? state.info.name : 'margins');
+  document.title = (file.path ? file.path.split('/').pop() + ' — ' : '') + (state.info ? state.info.name : 'inkd');
 
   if (file.kind === 'markdown') {
     renderMarkdown(file.content, file.path, doc);
@@ -538,7 +538,7 @@ function renderCurrent(fragment) {
     doc.replaceChildren(figure);
     setVisible('context', false);
   } else {
-    showMessage('This file is not text', 'margins shows markdown, text and images. Open this one with the program it belongs to.');
+    showMessage('This file is not text', 'inkd shows markdown, text and images. Open this one with the program it belongs to.');
   }
 
   if (fragment) scrollToFragment(fragment);
@@ -567,7 +567,7 @@ function sourceView(content) {
 }
 
 function scrollToFragment(fragment) {
-  var target = document.getElementById(fragment) || document.getElementById(MarginsLinks.slugify(fragment));
+  var target = document.getElementById(fragment) || document.getElementById(InkdLinks.slugify(fragment));
   if (target) target.scrollIntoView({ block: 'start' });
 }
 
@@ -636,7 +636,7 @@ function showFolder(path) {
   renderBreadcrumbs(path);
   setVisible('editButton', false);
   $('saveState').textContent = '';
-  document.title = (path || (state.info ? state.info.name : '')) + ' — margins';
+  document.title = (path || (state.info ? state.info.name : '')) + ' — inkd';
 
   return loadLevel(path).then(function (entries) {
     var doc = $('document');
@@ -882,7 +882,7 @@ function openQuickOpen() {
 function renderQuickOpen() {
   var query = $('quickOpenInput').value;
   // With nothing typed, the files people most often want: the markdown.
-  var paths = query ? rankFiles(query, state.paths, 50) : state.paths.filter(MarginsLinks.isMarkdownPath).slice(0, 50);
+  var paths = query ? rankFiles(query, state.paths, 50) : state.paths.filter(InkdLinks.isMarkdownPath).slice(0, 50);
   var results = $('quickOpenResults');
   results.replaceChildren();
   quickSelection = 0;
@@ -1050,7 +1050,7 @@ function createFile(event) {
   if (!/\.[^/]+$/.test(path)) path += '.md';
 
   var title = path.split('/').pop().replace(/\.[^.]+$/, '');
-  var content = MarginsLinks.isMarkdownPath(path) ? '# ' + title + '\n\n' : '';
+  var content = InkdLinks.isMarkdownPath(path) ? '# ' + title + '\n\n' : '';
   sendJson('POST', 'api/file', { path: path, content: content }).then(function (created) {
     $('newFile').close();
     return refreshFiles().then(refreshTree).then(function () {
@@ -1092,7 +1092,7 @@ function onKeydown(event) {
   else if (action === 'save') { event.preventDefault(); if (state.editing) save(); }
   else if (action === 'escape') {
     // Dialogs close themselves on Escape; leaving the editor is the one
-    // Escape margins handles.
+    // Escape inkd handles.
     if (!document.querySelector('dialog[open]') && state.editing) stopEditing(false);
   }
   else if (document.querySelector('dialog[open]')) return;
@@ -1124,7 +1124,7 @@ function labelShortcuts() {
 function toggleSidebar() {
   var hidden = document.body.classList.toggle('sidebar-hidden');
   $('sidebarToggle').setAttribute('aria-expanded', String(!hidden));
-  try { localStorage.setItem('margins:sidebar-hidden', hidden ? '1' : ''); } catch (error) { /* fine */ }
+  try { localStorage.setItem('inkd:sidebar-hidden', hidden ? '1' : ''); } catch (error) { /* fine */ }
 }
 
 /**
@@ -1190,7 +1190,7 @@ function wire() {
   });
 
   try {
-    if (localStorage.getItem('margins:sidebar-hidden')) toggleSidebar();
+    if (localStorage.getItem('inkd:sidebar-hidden')) toggleSidebar();
   } catch (error) { /* fine */ }
 }
 
@@ -1215,7 +1215,7 @@ function start() {
   }).then(function () {
     state.poll = setInterval(checkForChanges, 2000);
   }).catch(function (error) {
-    showMessage('margins could not start', error.message);
+    showMessage('inkd could not start', error.message);
   });
 }
 

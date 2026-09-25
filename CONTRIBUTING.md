@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for looking. margins is small on purpose, and the most useful
+Thanks for looking. inkd is small on purpose, and the most useful
 contributions keep it that way.
 
 ## Before you start
@@ -12,10 +12,10 @@ contributions keep it that way.
 ## Setting up
 
 ```bash
-git clone https://github.com/dheerajjha/margins.git
-cd margins && npm install
+git clone https://github.com/dheerajjha/inkd.git
+cd inkd && npm install
 npm test
-node bin/margins.js path/to/some/markdown
+node bin/inkd.js path/to/some/markdown
 ```
 
 ## House rules

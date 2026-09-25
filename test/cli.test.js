@@ -10,7 +10,7 @@ const { USAGE, UsageError, parseArgs } = require('../lib/cli');
 const { version } = require('../package.json');
 
 const run = promisify(execFile);
-const BIN = path.join(__dirname, '..', 'bin', 'margins.js');
+const BIN = path.join(__dirname, '..', 'bin', 'inkd.js');
 
 test('no arguments means the current folder, opened in a browser', () => {
   assert.deepEqual(parseArgs([]), { path: null, port: null, hidden: false, open: true, help: false, version: false });
@@ -38,13 +38,13 @@ test('the usage text mentions every option', () => {
 
 test('--version and --help print and exit without starting anything', async () => {
   assert.equal((await run('node', [BIN, '--version'])).stdout.trim(), version);
-  assert.match((await run('node', [BIN, '--help'])).stdout, /^margins — open a folder of markdown/);
+  assert.match((await run('node', [BIN, '--help'])).stdout, /^inkd — open a folder of markdown/);
 });
 
 test('a path that does not exist is a clear error, exit 2', async () => {
   await assert.rejects(run('node', [BIN, '/definitely/not/here']), error => {
     assert.equal(error.code, 2);
-    assert.match(error.stderr, /margins: Nothing at \/definitely\/not\/here\./);
+    assert.match(error.stderr, /inkd: Nothing at \/definitely\/not\/here\./);
     return true;
   });
 });

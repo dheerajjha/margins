@@ -12,7 +12,7 @@ The first release.
 
 ### Added
 
-- `margins [path]` opens a folder of markdown in the browser: a file tree,
+- `inkd [path]` opens a folder of markdown in the browser: a file tree,
   rendered GitHub-flavoured markdown, and the file's outline.
 - Links followed the way GitHub reads them and the way Obsidian does:
   relative paths with heading anchors, and `[[wikilinks]]` with headings,
@@ -32,5 +32,5 @@ The first release.
   symlinks, `.git` and `node_modules` never opened, and refusal of requests
   from other websites or other host names.
 
-[Unreleased]: https://github.com/dheerajjha/margins/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/dheerajjha/margins/releases/tag/v0.1.0
+[Unreleased]: https://github.com/dheerajjha/inkd/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/dheerajjha/inkd/releases/tag/v0.1.0

@@ -9,11 +9,11 @@ const vm = require('node:vm');
 /**
  * The page's pure logic, lifted out of public/app.js the way reviewer tests
  * its client code: the page has no module system, and these functions touch
- * nothing but their arguments -- and MarginsLinks, which is given to them.
+ * nothing but their arguments -- and InkdLinks, which is given to them.
  */
 
 const APP_JS = fs.readFileSync(path.join(__dirname, '..', 'public', 'app.js'), 'utf-8');
-const context = vm.createContext({ MarginsLinks: require('../lib/links') });
+const context = vm.createContext({ InkdLinks: require('../lib/links') });
 
 for (const name of ['encodePath', 'hrefFor', 'rawUrl', 'parseRoute', 'fuzzyScore', 'rankFiles', 'shortcutFor', 'uniqueSlug']) {
   const match = APP_JS.match(new RegExp(`function ${name}\\([^)]*\\) \\{[\\s\\S]*?\\n\\}`));

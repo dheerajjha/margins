@@ -13,11 +13,11 @@ const { RAW_CONTENT_SECURITY_POLICY, baseHeaders, hostIsAllowed, originIsAllowed
 const { version } = require('./package.json');
 
 /**
- * The margins server: one folder, served to one browser on this machine.
+ * The inkd server: one folder, served to one browser on this machine.
  *
  * No framework. It answers a dozen routes, and every dependency a local tool
  * ships is one more thing in someone's supply chain -- the page's two
- * libraries are the only packages margins installs, and the server uses
+ * libraries are the only packages inkd installs, and the server uses
  * neither.
  */
 
@@ -76,7 +76,7 @@ function fail(res, error) {
     return;
   }
   const status = Number.isInteger(error?.status) ? error.status : 500;
-  if (status === 500) console.error('margins:', error);
+  if (status === 500) console.error('inkd:', error);
   const body = { error: status === 500 ? 'Something went wrong reading that.' : error.message };
   // A conflict carries what is on disk now, so the page can show it rather
   // than only refuse.
@@ -133,7 +133,7 @@ async function createServer({ root, hidden = false, initial = null, onIdle = nul
   const port = () => server.address()?.port;
 
   async function handle(req, res) {
-    // (3) in lib/security.js: nothing is answered for a name margins does not
+    // (3) in lib/security.js: nothing is answered for a name inkd does not
     // listen on -- the DNS-rebinding defence.
     if (!hostIsAllowed(req, port())) {
       return send(res, 421, 'Misdirected request', { 'Content-Type': 'text/plain; charset=utf-8' });
@@ -143,9 +143,9 @@ async function createServer({ root, hidden = false, initial = null, onIdle = nul
     const route = url.pathname;
 
     if (req.method !== 'GET' && req.method !== 'HEAD') {
-      // (2) in lib/security.js: writes only from margins' own page.
+      // (2) in lib/security.js: writes only from inkd's own page.
       if (!originIsAllowed(req, port())) {
-        return sendJson(res, 403, { error: 'Changes are only accepted from the margins page itself.' });
+        return sendJson(res, 403, { error: 'Changes are only accepted from the inkd page itself.' });
       }
     }
 
@@ -236,7 +236,7 @@ async function createServer({ root, hidden = false, initial = null, onIdle = nul
 
   /**
    * An image from the folder, for markdown that shows one. Images only: an
-   * HTML file served raw would be a page in margins' origin, and serving it
+   * HTML file served raw would be a page in inkd's origin, and serving it
    * is not what a markdown browser is for.
    */
   async function serveRaw(res, encoded) {

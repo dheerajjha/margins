@@ -4,7 +4,7 @@
 # identity below and mints a short-lived credential for that one publish. The
 # trust relationship is registered against the package:
 #
-#   npm trust github margins --file release.yml --repo dheerajjha/margins --allow-publish
+#   npm trust github inkd --file release.yml --repo dheerajjha/inkd --allow-publish
 #
 # Three things must keep matching that record or the publish is rejected: the
 # repository, this file's name, and the absence of an environment. Renaming
@@ -67,14 +67,14 @@ jobs:
       # The tarball is built from the `files` allowlist, so a file that exists
       # in git but is not listed is not shipped -- and fails only for whoever
       # installs it. Check every lib module and page asset made it in.
-      - name: Verify the tarball ships what margins needs
+      - name: Verify the tarball ships what inkd needs
         run: |
           npm pack --silent
-          tar -tzf margins-*.tgz > /tmp/files.txt
+          tar -tzf inkd-*.tgz > /tmp/files.txt
           for module in lib/*.js public/*; do
             grep -qx "package/$module" /tmp/files.txt || { echo "::error::$module missing from the tarball"; exit 1; }
           done
-          for required in package/bin/margins.js package/server.js; do
+          for required in package/bin/inkd.js package/server.js; do
             grep -qx "$required" /tmp/files.txt || { echo "::error::$required missing from the tarball"; exit 1; }
           done
           echo "tarball verified ($(wc -l < /tmp/files.txt) entries)"
@@ -84,10 +84,10 @@ jobs:
       - name: Smoke-test the packed package
         run: |
           mkdir -p /tmp/smoke && cd /tmp/smoke && npm init -y --silent > /dev/null
-          npm install --silent "$GITHUB_WORKSPACE"/margins-*.tgz
-          ./node_modules/.bin/margins --version
+          npm install --silent "$GITHUB_WORKSPACE"/inkd-*.tgz
+          ./node_modules/.bin/inkd --version
           mkdir notes && echo "# Hello" > notes/README.md
-          ./node_modules/.bin/margins notes --no-open --port 4699 &
+          ./node_modules/.bin/inkd notes --no-open --port 4699 &
           for i in $(seq 1 20); do curl -sf http://127.0.0.1:4699/api/info && break; sleep 0.5; done
           curl -sf http://127.0.0.1:4699/vendor/marked.js > /dev/null
           curl -sf http://127.0.0.1:4699/vendor/purify.js > /dev/null
@@ -101,8 +101,8 @@ jobs:
       - name: Publish, unless this version is already on npm
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          if npm view "margins@$VERSION" version > /dev/null 2>&1; then
-            echo "::notice::margins@$VERSION is already on npm; nothing to publish."
+          if npm view "inkd@$VERSION" version > /dev/null 2>&1; then
+            echo "::notice::inkd@$VERSION is already on npm; nothing to publish."
           else
             npm publish --provenance --access public
           fi

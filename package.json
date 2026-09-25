@@ -1,10 +1,10 @@
 {
-  "name": "margins",
+  "name": "inkd",
   "version": "0.1.0",
   "description": "Open a folder of markdown in your browser from the terminal. Browse, read, edit, search, and follow [[wikilinks]] and backlinks. No vault, no config, nothing written but what you save.",
   "main": "server.js",
   "scripts": {
-    "start": "node bin/margins.js",
+    "start": "node bin/inkd.js",
     "test": "node --test",
     "test:watch": "node --test --watch"
   },
@@ -29,7 +29,7 @@
     "marked": "^18.0.14"
   },
   "bin": {
-    "margins": "bin/margins.js"
+    "inkd": "bin/inkd.js"
   },
   "files": [
     "bin/",
@@ -42,10 +42,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dheerajjha/margins.git"
+    "url": "git+https://github.com/dheerajjha/inkd.git"
   },
   "bugs": {
-    "url": "https://github.com/dheerajjha/margins/issues"
+    "url": "https://github.com/dheerajjha/inkd/issues"
   },
-  "homepage": "https://github.com/dheerajjha/margins#readme"
+  "homepage": "https://github.com/dheerajjha/inkd#readme"
 }
