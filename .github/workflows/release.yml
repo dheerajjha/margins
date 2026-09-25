@@ -4,7 +4,7 @@
 # identity below and mints a short-lived credential for that one publish. The
 # trust relationship is registered against the package:
 #
-#   npm trust github margins --file release.yml --repository dheerajjha/margins
+#   npm trust github margins --file release.yml --repo dheerajjha/margins --allow-publish
 #
 # Three things must keep matching that record or the publish is rejected: the
 # repository, this file's name, and the absence of an environment. Renaming
@@ -94,4 +94,15 @@ jobs:
           curl -sf "http://127.0.0.1:4699/api/file?path=README.md" | grep -q Hello
           kill %1
 
-      - run: npm publish --provenance --access public
+      # A version already on npm is not an error: the first one is published
+      # by hand, because npm only allows trusted publishing for a package that
+      # exists, and a release re-run after a partial failure should not go red
+      # for having already succeeded.
+      - name: Publish, unless this version is already on npm
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "margins@$VERSION" version > /dev/null 2>&1; then
+            echo "::notice::margins@$VERSION is already on npm; nothing to publish."
+          else
+            npm publish --provenance --access public
+          fi
