@@ -49,6 +49,17 @@ jobs:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
 
+      # The skip at the end makes a mismatched tag quiet: v0.1.1 pushed on a
+      # commit still at 0.1.0 would find 0.1.0 on npm and go green having
+      # published nothing. Refuse it here instead.
+      - name: Check the tag matches package.json
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [ "$GITHUB_REF_NAME" != "v$VERSION" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match package.json version $VERSION"
+            exit 1
+          fi
+
       # Trusted publishing needs npm >= 11.5.1, and an older one does not say
       # so: it looks for a token, finds none, and fails with a bare 404.
       - name: Ensure npm supports trusted publishing

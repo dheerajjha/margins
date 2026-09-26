@@ -6,7 +6,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [0.1.0] - 2026-09-25
+### Fixed
+
+- The npm page's repository, homepage and issue links name
+  `dheerajjha/margins`. 0.1.0's pointed at `dheerajjha/inkd`, the name the
+  project had for a day, and worked only through GitHub's redirect.
+
+## [0.1.0] - 2026-09-26
 
 The first release.
 
