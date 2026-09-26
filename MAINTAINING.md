@@ -42,8 +42,9 @@ Settings, Trusted publishing.
 The `v0.1.0` tag is on `ae8f18f`, the commit npm recorded as the package's
 `gitHead`, not on the tip of `main` when it was pushed. Its release run found
 0.1.0 already on npm and skipped the publish. Every release after it goes
-through `release.yml`, and 0.1.1 is the first to publish over OIDC: read that
-run's publish log, then install it fresh, before trusting the pipeline.
+through `release.yml`. 0.1.1 was the first, the same day: its publish log shows
+the signed provenance statement and `+ margins@0.1.1`, and a fresh install from
+npm passed the browser checks below.
 
 ### Before renaming the package
 
