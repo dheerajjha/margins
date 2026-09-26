@@ -6,6 +6,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-09-26
+
+The first release published from GitHub Actions rather than by hand.
+
+### Changed
+
+- The package carries npm provenance: its npm page links it to the commit and
+  the workflow run that built it. 0.1.0 was published by hand and has none.
+
 ### Fixed
 
 - The npm page's repository, homepage and issue links name
@@ -38,5 +47,6 @@ The first release.
   symlinks, `.git` and `node_modules` never opened, and refusal of requests
   from other websites or other host names.
 
-[Unreleased]: https://github.com/dheerajjha/margins/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/dheerajjha/margins/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/dheerajjha/margins/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/dheerajjha/margins/releases/tag/v0.1.0
