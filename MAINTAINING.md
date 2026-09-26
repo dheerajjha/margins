@@ -20,28 +20,38 @@ Two guards, both learned on reviewer:
 
 Docs-only and test-only changes do not need a release of their own.
 
-### The first publish
+### How 0.1.0 was published
 
 npm only lets trusted publishing be configured for a package that already
-exists, so 0.1.0 has to be published once by the owner, from a logged-in npm:
+exists, so 0.1.0 was published once by hand, from the owner's npm account, on
+2026-09-26. The trust record was added straight after:
 
 ```bash
-git checkout main && npm ci && npm test
-npm publish --access public
 npx npm@latest trust github margins --file release.yml --repo dheerajjha/margins --allow-publish
 ```
 
-`npm trust` needs npm 11.15 or newer (hence `npx npm@latest`), two-factor
-authentication on the account, and the package to exist -- which the publish
-just before it takes care of. No `--env`: the workflow uses no environment, and
-the trust record has to match that. The same can be done on npmjs.com, under
-the package's Settings, Trusted publishing.
+`npm trust` needs npm 11.15 or newer (hence `npx npm@latest`) and two-factor
+authentication on the account. There is no `--env`: the workflow uses no
+environment, and the record has to match that. Three things must keep matching
+it or the next release is rejected at publish: the repository
+`dheerajjha/margins`, the *file name* `release.yml`, and the absence of an
+environment. Renaming the repository or the workflow, or adding an
+environment, means changing the record first, on npmjs.com under the package's
+Settings, Trusted publishing.
 
-Then push the `v0.1.0` tag. `release.yml` sees 0.1.0 is already on npm and
-skips publishing it again, so the tag and the GitHub release exist without a
-red run. After that, every release goes through `release.yml` and no one needs
-to be logged in. Three things must keep matching the trust record: the repository,
-the *file name* `release.yml`, and the absence of an environment.
+The `v0.1.0` tag is on `ae8f18f`, the commit npm recorded as the package's
+`gitHead`, not on the tip of `main` when it was pushed. Its release run found
+0.1.0 already on npm and skipped the publish. Every release after it goes
+through `release.yml`, and 0.1.1 is the first to publish over OIDC: read that
+run's publish log, then install it fresh, before trusting the pipeline.
+
+### Before renaming the package
+
+For most of a day the project was called `inkd`. `npm view inkd` answered 404,
+and npm still refused the publish with a 403: "Package name too similar to
+existing packages". That check runs only when you publish, so a 404 does not
+mean a name is free. Publish under a new name before renaming the repository,
+the docs and the issues to match it.
 
 ## Checking a release in a browser
 
