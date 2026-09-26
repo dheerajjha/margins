@@ -1,6 +1,6 @@
 {
   "name": "margins",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Open a folder of markdown in your browser from the terminal. Browse, read, edit, search, and follow [[wikilinks]] and backlinks. No vault, no config, nothing written but what you save.",
   "main": "server.js",
   "scripts": {
