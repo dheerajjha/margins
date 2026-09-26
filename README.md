@@ -1,6 +1,6 @@
 # margins
 
-[![CI](https://github.com/dheerajjha/inkd/actions/workflows/ci.yml/badge.svg)](https://github.com/dheerajjha/inkd/actions/workflows/ci.yml)
+[![CI](https://github.com/dheerajjha/margins/actions/workflows/ci.yml/badge.svg)](https://github.com/dheerajjha/margins/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](package.json)
 [![Tests](https://img.shields.io/badge/tests-80-brightgreen.svg)](test/)
@@ -202,7 +202,7 @@ The page is a client of this; nothing is hidden from you.
 ## Development
 
 ```bash
-git clone https://github.com/dheerajjha/inkd.git
+git clone https://github.com/dheerajjha/margins.git
 cd margins && npm install
 npm test                    # 80 tests
 node bin/margins.js ~/notes

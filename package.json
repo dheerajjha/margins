@@ -42,10 +42,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dheerajjha/inkd.git"
+    "url": "git+https://github.com/dheerajjha/margins.git"
   },
   "bugs": {
-    "url": "https://github.com/dheerajjha/inkd/issues"
+    "url": "https://github.com/dheerajjha/margins/issues"
   },
-  "homepage": "https://github.com/dheerajjha/inkd#readme"
+  "homepage": "https://github.com/dheerajjha/margins#readme"
 }

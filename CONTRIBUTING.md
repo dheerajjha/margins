@@ -12,7 +12,7 @@ contributions keep it that way.
 ## Setting up
 
 ```bash
-git clone https://github.com/dheerajjha/inkd.git
+git clone https://github.com/dheerajjha/margins.git
 cd margins && npm install
 npm test
 node bin/margins.js path/to/some/markdown

@@ -4,7 +4,7 @@
 # identity below and mints a short-lived credential for that one publish. The
 # trust relationship is registered against the package:
 #
-#   npm trust github margins --file release.yml --repo dheerajjha/inkd --allow-publish
+#   npm trust github margins --file release.yml --repo dheerajjha/margins --allow-publish
 #
 # Three things must keep matching that record or the publish is rejected: the
 # repository, this file's name, and the absence of an environment. Renaming

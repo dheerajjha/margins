@@ -28,7 +28,7 @@ exists, so 0.1.0 has to be published once by the owner, from a logged-in npm:
 ```bash
 git checkout main && npm ci && npm test
 npm publish --access public
-npx npm@latest trust github margins --file release.yml --repo dheerajjha/inkd --allow-publish
+npx npm@latest trust github margins --file release.yml --repo dheerajjha/margins --allow-publish
 ```
 
 `npm trust` needs npm 11.15 or newer (hence `npx npm@latest`), two-factor
