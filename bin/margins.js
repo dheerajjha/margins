@@ -84,7 +84,7 @@ async function main(argv) {
   });
 
   const url = `http://${DEFAULT_HOST}:${server.address().port}/`;
-  note(`\n  inkd  ${url}`);
+  note(`\n  margins  ${url}`);
   note(`  folder   ${displayPath(server.realRoot)}`);
   note('\n  Close the tab when you are done, or press Ctrl+C.\n');
 
@@ -98,10 +98,10 @@ async function main(argv) {
 
 main(process.argv.slice(2)).catch(error => {
   if (error instanceof UsageError) {
-    note(`inkd: ${error.message}`);
-    note('Run inkd --help for usage.');
+    note(`margins: ${error.message}`);
+    note('Run margins --help for usage.');
     process.exit(2);
   }
-  note(`inkd: ${error.message}`);
+  note(`margins: ${error.message}`);
   process.exit(1);
 });

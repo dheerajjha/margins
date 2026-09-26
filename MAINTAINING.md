@@ -1,4 +1,4 @@
-# Maintaining inkd
+# Maintaining margins
 
 ## Releasing
 
@@ -16,7 +16,7 @@ Two guards, both learned on reviewer:
 - **CI must be green on the exact commit you tag** — by conclusion, not by
   status. "Completed" includes failures.
 - **Verify by installing the published package fresh**, not by reading the
-  green tick: `npm install -g inkd@X.Y.Z --prefer-online`, then run it.
+  green tick: `npm install -g margins@X.Y.Z --prefer-online`, then run it.
 
 Docs-only and test-only changes do not need a release of their own.
 
@@ -28,7 +28,7 @@ exists, so 0.1.0 has to be published once by the owner, from a logged-in npm:
 ```bash
 git checkout main && npm ci && npm test
 npm publish --access public
-npx npm@latest trust github inkd --file release.yml --repo dheerajjha/inkd --allow-publish
+npx npm@latest trust github margins --file release.yml --repo dheerajjha/inkd --allow-publish
 ```
 
 `npm trust` needs npm 11.15 or newer (hence `npx npm@latest`), two-factor
@@ -46,7 +46,7 @@ the *file name* `release.yml`, and the absence of an environment.
 ## Checking a release in a browser
 
 The test suite covers the server and the page's pure logic. Rendering and
-sanitising happen in the browser, so before a release, open inkd on a
+sanitising happen in the browser, so before a release, open margins on a
 folder containing a hostile markdown file — `<script>`, `onerror`,
 `javascript:` links, `<svg onload>`, `<iframe>`, `<form>`, `<style>`, inline
 `style` — and confirm nothing runs and the page still reads.

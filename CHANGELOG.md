@@ -12,7 +12,7 @@ The first release.
 
 ### Added
 
-- `inkd [path]` opens a folder of markdown in the browser: a file tree,
+- `margins [path]` opens a folder of markdown in the browser: a file tree,
   rendered GitHub-flavoured markdown, and the file's outline.
 - Links followed the way GitHub reads them and the way Obsidian does:
   relative paths with heading anchors, and `[[wikilinks]]` with headings,

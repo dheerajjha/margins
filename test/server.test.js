@@ -47,7 +47,7 @@ test('the page and its scripts are served, each with the security headers', asyn
   }
 });
 
-test('the policy allows no script inkd did not ship, and no forms or framing', async t => {
+test('the policy allows no script margins did not ship, and no forms or framing', async t => {
   const app = await serve(t, {});
   const policy = (await app.get('/')).headers.get('content-security-policy');
   assert.match(policy, /script-src 'self'(;|$)/, 'no unsafe-inline, no unsafe-eval');
@@ -109,7 +109,7 @@ test('images are served raw, in a sandbox that stops an SVG running script', asy
   assert.equal((await app.get('/raw/p.png')).headers.get('content-type'), 'image/png');
 });
 
-test('raw serves images only -- an HTML file served raw would be a page in inkd\'s origin', async t => {
+test('raw serves images only -- an HTML file served raw would be a page in margins\' origin', async t => {
   const app = await serve(t, { 'page.html': '<script>x()</script>', 'a.md': 'x' });
   assert.equal((await app.get('/raw/page.html')).status, 404);
   assert.equal((await app.get('/raw/a.md')).status, 404);
@@ -170,7 +170,7 @@ test('a request addressed to another name is refused -- DNS rebinding', async t 
   assert.equal(response.status, 421);
   assert.doesNotMatch(response.body, /secret/);
   const ok = await rawRequest(app.port, { path: '/api/file?path=a.md', headers: { Host: `localhost:${app.port}` } });
-  assert.equal(ok.status, 200, 'localhost is inkd too');
+  assert.equal(ok.status, 200, 'localhost is margins too');
 });
 
 test('a write from another website is refused, and so is one with no Origin', async t => {
@@ -220,7 +220,7 @@ async function openTab(url) {
   return { close: () => controller.abort(), response, reader };
 }
 
-test('the last tab closing stops inkd, after a grace period', async t => {
+test('the last tab closing stops margins, after a grace period', async t => {
   let idle = 0;
   const app = await serve(t, {}, { onIdle: () => { idle += 1; }, idleGraceMs: GRACE });
   const tab = await openTab(app.url);

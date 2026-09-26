@@ -15,7 +15,7 @@ const { createServer } = require('../../server');
  *   as a symlink, and paths the tests compute must match the server's)
  */
 async function makeFolder(files = {}) {
-  const dir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'inkd-test-')));
+  const dir = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'margins-test-')));
   for (const [rel, content] of Object.entries(files)) {
     const abs = path.join(dir, ...rel.split('/'));
     await fs.mkdir(path.dirname(abs), { recursive: true });
