@@ -61,7 +61,13 @@ async function startTestServer(root, options = {}) {
     get,
     getJson,
     send,
-    close: () => new Promise(resolve => server.close(resolve))
+    close: () => {
+      const closed = new Promise(resolve => server.close(resolve));
+      // fetch() keeps its socket alive between requests. Node 19+ closes idle
+      // sockets in close(); Node 18 waits out keepAliveTimeout (5s) instead.
+      server.closeIdleConnections?.();
+      return closed;
+    }
   };
 }
 
