@@ -3,7 +3,7 @@
 [![CI](https://github.com/dheerajjha/margins/actions/workflows/ci.yml/badge.svg)](https://github.com/dheerajjha/margins/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](package.json)
-[![Tests](https://img.shields.io/badge/tests-80-brightgreen.svg)](test/)
+[![Tests](https://img.shields.io/badge/tests-86-brightgreen.svg)](test/)
 [![Dependencies](https://img.shields.io/badge/dependencies-2-brightgreen.svg)](package.json)
 
 Open any folder of markdown in your browser, from the terminal. Browse it as a
@@ -204,7 +204,7 @@ The page is a client of this; nothing is hidden from you.
 ```bash
 git clone https://github.com/dheerajjha/margins.git
 cd margins && npm install
-npm test                    # 80 tests
+npm test                    # 86 tests
 node bin/margins.js ~/notes
 ```
 
