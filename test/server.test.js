@@ -154,7 +154,7 @@ test('nothing can be written into .git, out of the folder, or through a symlink 
   const outside = await makeFolder({});
   t.after(() => removeFolder(outside));
   const app = await serve(t, { 'a.md': 'a' });
-  await fs.symlink(outside, path.join(app.root, 'away'));
+  await fs.symlink(outside, path.join(app.root, 'away'), 'dir');
 
   assert.equal((await app.send('POST', '/api/file', { path: '.git/hooks/pre-commit', content: 'x' })).status, 403);
   assert.equal((await app.send('POST', '/api/file', { path: '../escaped.md', content: 'x' })).status, 403);

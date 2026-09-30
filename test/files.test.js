@@ -100,7 +100,7 @@ test('saving writes in place, so hard links and permissions survive', async t =>
   const after = await fs.stat(abs);
 
   assert.equal(after.ino, before.ino, 'the same file, not a replacement');
-  assert.equal(after.mode & 0o777, 0o640);
+  assert.equal(after.mode & 0o777, before.mode & 0o777, 'permissions are unchanged');
   assert.equal(await fs.readFile(path.join(root, 'linked.md'), 'utf8'), 'b\n');
 });
 

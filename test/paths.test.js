@@ -55,7 +55,7 @@ test('a symlink inside the folder that points outside it is refused', async t =>
   const root = await makeFolder({ 'a.md': 'a' });
   t.after(async () => { await removeFolder(root); await removeFolder(outside); });
 
-  await fs.symlink(outside, path.join(root, 'away'));
+  await fs.symlink(outside, path.join(root, 'away'), 'dir');
   await fs.symlink(path.join(outside, 'secret.md'), path.join(root, 'secret.md'));
 
   await assert.rejects(resolveExisting(root, 'away/secret.md'), /outside the folder through a symlink/);
@@ -65,7 +65,7 @@ test('a symlink inside the folder that points outside it is refused', async t =>
 test('a symlink that stays inside the folder is followed', async t => {
   const root = await makeFolder({ 'real/a.md': 'a' });
   t.after(() => removeFolder(root));
-  await fs.symlink(path.join(root, 'real'), path.join(root, 'alias'));
+  await fs.symlink(path.join(root, 'real'), path.join(root, 'alias'), 'dir');
 
   assert.equal(await resolveExisting(root, 'alias/a.md'), path.join(root, 'real', 'a.md'));
 });
@@ -83,7 +83,7 @@ test('a new file cannot be created through a symlinked folder that leads out', a
   const outside = await makeFolder({});
   const root = await makeFolder({});
   t.after(async () => { await removeFolder(root); await removeFolder(outside); });
-  await fs.symlink(outside, path.join(root, 'away'));
+  await fs.symlink(outside, path.join(root, 'away'), 'dir');
 
   await assert.rejects(resolveNew(root, 'away/new.md'), /outside the folder through a symlink/);
   await assert.rejects(resolveNew(root, 'away/deeper/new.md'), /outside the folder through a symlink/);
