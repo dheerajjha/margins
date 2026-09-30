@@ -45,9 +45,9 @@ test('a symlink that leads out of the folder is not listed', async t => {
   const outside = await makeFolder({ 'x.md': '' });
   const root = await makeFolder({ 'a.md': '', 'real/b.md': '' });
   t.after(async () => { await removeFolder(root); await removeFolder(outside); });
-  await fs.symlink(outside, path.join(root, 'away'));
+  await fs.symlink(outside, path.join(root, 'away'), 'dir');
   await fs.symlink(path.join(outside, 'x.md'), path.join(root, 'x.md'));
-  await fs.symlink(path.join(root, 'real'), path.join(root, 'alias'));
+  await fs.symlink(path.join(root, 'real'), path.join(root, 'alias'), 'dir');
   await fs.symlink(path.join(root, 'gone.md'), path.join(root, 'dangling.md'));
 
   assert.deepEqual(names(await listDir(root, root)), ['/alias', '/real', 'a.md'],
@@ -78,7 +78,7 @@ test('the walk stops at its limit and says so', async t => {
 test('the walk does not follow symlinked folders, so a loop cannot hang it', async t => {
   const root = await makeFolder({ 'a/b.md': '' });
   t.after(() => removeFolder(root));
-  await fs.symlink(root, path.join(root, 'a', 'loop'));
+  await fs.symlink(root, path.join(root, 'a', 'loop'), 'dir');
 
   const { files } = await walkFiles(root);
   assert.deepEqual(files.map(f => f.path), ['a/b.md']);
