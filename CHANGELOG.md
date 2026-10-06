@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-06
+
 ### Added
 
 - **The file tree and the outline can be resized.** Drag the edge between
@@ -55,6 +57,7 @@ The first release.
   symlinks, `.git` and `node_modules` never opened, and refusal of requests
   from other websites or other host names.
 
-[Unreleased]: https://github.com/dheerajjha/margins/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/dheerajjha/margins/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/dheerajjha/margins/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/dheerajjha/margins/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/dheerajjha/margins/releases/tag/v0.1.0
