@@ -6,6 +6,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **The file tree and the outline can be resized.** Drag the edge between
+  either panel and the page, or focus the edge and use the arrow keys (Shift
+  for bigger steps). Double-click it to reset. The widths are remembered by
+  the browser, clamped so the page always keeps at least 360px, and the
+  narrow-screen layouts are unaffected.
+
 ## [0.1.1] - 2026-09-26
 
 The first release published from GitHub Actions rather than by hand.
