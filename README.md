@@ -3,7 +3,7 @@
 [![CI](https://github.com/dheerajjha/margins/actions/workflows/ci.yml/badge.svg)](https://github.com/dheerajjha/margins/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](package.json)
-[![Tests](https://img.shields.io/badge/tests-86-brightgreen.svg)](test/)
+[![Tests](https://img.shields.io/badge/tests-87-brightgreen.svg)](test/)
 [![Dependencies](https://img.shields.io/badge/dependencies-2-brightgreen.svg)](package.json)
 
 Open any folder of markdown in your browser, from the terminal. Browse it as a
@@ -58,6 +58,9 @@ you are standing in — your notes, a project's `docs/`, a colleague's repositor
   does not exist yet — the way Obsidian does it.
 - **Open a file by name** (`Ctrl/Cmd+P`) and **search every file**
   (`Ctrl/Cmd+Shift+F`).
+- **Make the panels the width you want.** Drag the edge of the file tree or of
+  the outline, or focus that edge and use the arrow keys. Double-click it to
+  reset. Your browser remembers the widths.
 - **Keep up with other editors.** Change a file in vim, VS Code or with an
   agent, and the page shows the new version within two seconds.
 - **Never lose an edit to one.** If the file changed on disk after you opened
@@ -204,7 +207,7 @@ The page is a client of this; nothing is hidden from you.
 ```bash
 git clone https://github.com/dheerajjha/margins.git
 cd margins && npm install
-npm test                    # 86 tests
+npm test                    # 87 tests
 node bin/margins.js ~/notes
 ```
 

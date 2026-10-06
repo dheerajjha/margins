@@ -133,6 +133,18 @@ function uniqueSlug(text, used) {
   return slug;
 }
 
+/**
+ * A panel width the page can use: at least `min`, at most `max`, in whole
+ * pixels. A saved width from a wider window comes back clamped, instead of
+ * pushing the page off the screen. Null for something that is not a number,
+ * such as a damaged saved value.
+ */
+function clampPanelWidth(width, min, max) {
+  var value = Number(width);
+  if (width === null || width === '' || !isFinite(value)) return null;
+  return Math.round(Math.min(Math.max(value, min), Math.max(min, max)));
+}
+
 // --- state ---------------------------------------------------------------
 
 var state = {
@@ -450,6 +462,7 @@ function refreshTree() {
 
 function setVisible(id, visible) {
   $(id).classList.toggle('hidden', !visible);
+  if (id === 'context') $('contextResizer').classList.toggle('hidden', !visible);
 }
 
 /** Where a path is: each folder above it, clickable, then its name. */
@@ -1136,8 +1149,110 @@ function watchFromThisTab() {
   try { new EventSource('api/alive'); } catch (error) { /* no automatic stop, nothing worse */ }
 }
 
+// --- resizable panels ----------------------------------------------------------
+
+/**
+ * The two side panels, each widened or narrowed by dragging the edge between
+ * it and the page. `grows` is which way the pointer has to move to make the
+ * panel wider: right for the files on the left, left for the outline on the
+ * right. The width goes in a CSS variable of its own (see .sidebar in
+ * style.css), so the narrow-screen layouts still override it.
+ */
+var PANELS = {
+  sidebar: { handle: 'sidebarResizer', variable: '--sidebar-width', key: 'margins:width:sidebar', min: 180, grows: 1 },
+  context: { handle: 'contextResizer', variable: '--context-width', key: 'margins:width:context', min: 160, grows: -1 }
+};
+
+/** At most half the window, and never so wide that the page gets narrower than 360px. */
+function panelMax(name) {
+  var other = $(name === 'sidebar' ? 'context' : 'sidebar');
+  var otherWidth = other.offsetParent !== null ? other.getBoundingClientRect().width : 0;
+  return Math.min(Math.floor(window.innerWidth / 2), window.innerWidth - otherWidth - 360);
+}
+
+function panelWidth(name) {
+  return $(name).getBoundingClientRect().width;
+}
+
+function setPanelWidth(name, width, remember) {
+  var panel = PANELS[name];
+  var max = panelMax(name);
+  var value = clampPanelWidth(width, panel.min, max);
+  if (value === null) return;
+  document.documentElement.style.setProperty(panel.variable, value + 'px');
+  var handle = $(panel.handle);
+  handle.setAttribute('aria-valuenow', String(value));
+  handle.setAttribute('aria-valuemin', String(panel.min));
+  handle.setAttribute('aria-valuemax', String(Math.max(panel.min, max)));
+  if (remember) {
+    try { localStorage.setItem(panel.key, String(value)); } catch (error) { /* fine */ }
+  }
+}
+
+function resetPanelWidth(name) {
+  var panel = PANELS[name];
+  document.documentElement.style.removeProperty(panel.variable);
+  try { localStorage.removeItem(panel.key); } catch (error) { /* fine */ }
+  $(panel.handle).setAttribute('aria-valuenow', String(Math.round(panelWidth(name))));
+}
+
+/**
+ * Put back the widths this browser saved, clamped to the window as it is now.
+ * It also runs on resize, so a window narrowed and then widened again returns
+ * to the saved width, not to whatever the narrow window allowed.
+ */
+function restorePanelWidths() {
+  Object.keys(PANELS).forEach(function (name) {
+    var saved = null;
+    try { saved = localStorage.getItem(PANELS[name].key); } catch (error) { /* fine */ }
+    if (saved !== null) setPanelWidth(name, saved, false);
+  });
+}
+
+function wireResizer(name) {
+  var panel = PANELS[name];
+  var handle = $(panel.handle);
+  var drag = null;
+
+  handle.addEventListener('pointerdown', function (event) {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    drag = { x: event.clientX, width: panelWidth(name) };
+    handle.setPointerCapture(event.pointerId);
+    handle.classList.add('dragging');
+    document.body.classList.add('resizing');
+  });
+  handle.addEventListener('pointermove', function (event) {
+    if (!drag) return;
+    setPanelWidth(name, drag.width + panel.grows * (event.clientX - drag.x), false);
+  });
+  function finish(event) {
+    if (!drag) return;
+    drag = null;
+    handle.classList.remove('dragging');
+    document.body.classList.remove('resizing');
+    try { handle.releasePointerCapture(event.pointerId); } catch (error) { /* already released */ }
+    setPanelWidth(name, panelWidth(name), true);
+  }
+  handle.addEventListener('pointerup', finish);
+  handle.addEventListener('pointercancel', finish);
+  handle.addEventListener('dblclick', function () { resetPanelWidth(name); });
+
+  // A separator moves the way the arrow points, so the arrow that widens a
+  // panel depends on which side of the page it is on. Shift takes bigger steps.
+  handle.addEventListener('keydown', function (event) {
+    var direction = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+    if (!direction) return;
+    event.preventDefault();
+    setPanelWidth(name, panelWidth(name) + panel.grows * direction * (event.shiftKey ? 48 : 16), true);
+  });
+}
+
 function wire() {
   labelShortcuts();
+  wireResizer('sidebar');
+  wireResizer('context');
+  window.addEventListener('resize', restorePanelWidths);
   document.addEventListener('keydown', onKeydown);
   window.addEventListener('hashchange', onHashChange);
   window.addEventListener('beforeunload', function (event) {
@@ -1192,6 +1307,7 @@ function wire() {
   try {
     if (localStorage.getItem('margins:sidebar-hidden')) toggleSidebar();
   } catch (error) { /* fine */ }
+  restorePanelWidths();
 }
 
 function start() {

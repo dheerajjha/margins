@@ -15,7 +15,7 @@ const vm = require('node:vm');
 const APP_JS = fs.readFileSync(path.join(__dirname, '..', 'public', 'app.js'), 'utf-8');
 const context = vm.createContext({ MarginsLinks: require('../lib/links') });
 
-for (const name of ['encodePath', 'hrefFor', 'rawUrl', 'parseRoute', 'fuzzyScore', 'rankFiles', 'shortcutFor', 'uniqueSlug']) {
+for (const name of ['encodePath', 'hrefFor', 'rawUrl', 'parseRoute', 'fuzzyScore', 'rankFiles', 'shortcutFor', 'uniqueSlug', 'clampPanelWidth']) {
   const match = APP_JS.match(new RegExp(`function ${name}\\([^)]*\\) \\{[\\s\\S]*?\\n\\}`));
   if (!match) throw new Error(`Could not find ${name} in app.js`);
   vm.runInContext(match[0], context);
@@ -83,4 +83,19 @@ test('headings get anchors that stay unique within a document', () => {
   assert.equal(uniqueSlug('Notes', used), 'notes-1');
   assert.equal(uniqueSlug('Notes', used), 'notes-2');
   assert.equal(uniqueSlug('!!!', used), 'section', 'a heading of only punctuation still gets one');
+});
+
+test('a dragged panel width stays inside what the window can hold', () => {
+  const clamp = fn('clampPanelWidth');
+  assert.equal(clamp(300, 180, 600), 300);
+  assert.equal(clamp(100, 180, 600), 180, 'never narrower than the minimum');
+  assert.equal(clamp(900, 180, 600), 600, 'never wider than the window allows');
+  assert.equal(clamp(250.6, 180, 600), 251, 'whole pixels');
+  assert.equal(clamp('320', 180, 600), 320, 'a width read back from storage is a string');
+  // A window narrower than the minimum: the minimum wins, not a negative max.
+  assert.equal(clamp(300, 180, 100), 180);
+  // A damaged saved value is ignored rather than turned into 0px.
+  assert.equal(clamp('wide', 180, 600), null);
+  assert.equal(clamp(null, 180, 600), null);
+  assert.equal(clamp('', 180, 600), null);
 });

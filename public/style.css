@@ -196,11 +196,12 @@ kbd {
 }
 
 .sidebar {
-  width: var(--sidebar);
+  /* --sidebar-width is what dragging the edge sets; see resizable panels in
+   * app.js. A separate variable, so the narrow-screen rules below still win. */
+  width: var(--sidebar-width, var(--sidebar));
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--border);
   background: var(--bg);
   overflow: hidden;
 }
@@ -228,11 +229,53 @@ kbd {
 }
 
 .context {
-  width: var(--context);
+  width: var(--context-width, var(--context));
   flex-shrink: 0;
   overflow-y: auto;
   padding: 20px 16px;
-  border-left: 1px solid var(--border-muted);
+}
+
+/* The edge between a panel and the page. It draws the 1px line the panels'
+ * borders used to, inside a 6px strip that is easy to grab. It sits beside
+ * the panels rather than over them, because both edges it touches are where
+ * a scrollbar lives. */
+.resizer {
+  flex: 0 0 6px;
+  position: relative;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.resizer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  background: var(--border);
+  transition: background 0.12s, width 0.12s;
+}
+
+#contextResizer::after { background: var(--border-muted); }
+
+.resizer:hover::after,
+.resizer:focus-visible::after,
+.resizer.dragging::after {
+  width: 3px;
+  background: var(--accent);
+}
+
+.resizer:focus-visible { outline: none; }
+
+.sidebar-hidden #sidebarResizer { display: none; }
+
+/* While dragging, the pointer is often over the page, not the handle. */
+body.resizing,
+body.resizing * {
+  cursor: col-resize !important;
+  user-select: none !important;
 }
 
 /* --- the tree ---------------------------------------------------------------- */
@@ -743,11 +786,15 @@ dialog::backdrop { background: rgba(1, 4, 9, 0.35); }
 /* --- narrow screens -------------------------------------------------------------- */
 
 @media (max-width: 1100px) {
-  .context { display: none !important; }
+  .context,
+  #contextResizer { display: none !important; }
 }
 
 @media (max-width: 760px) {
   :root { --sidebar: 100vw; }
+  /* A width dragged on a wider window must not shrink the phone layout. */
+  .sidebar { width: 100vw; }
+  #sidebarResizer { display: none; }
   .pill { font-size: 0; gap: 0; padding: 0 8px; }
   .pill kbd { font-size: 11px; }
   .pill::before { font-size: 13px; }
