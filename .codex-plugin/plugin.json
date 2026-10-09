@@ -1,0 +1,19 @@
+{
+  "name": "margins",
+  "version": "0.2.0",
+  "description": "Open a folder of markdown in your browser: the plan the agent wrote, a repository's docs, your notes.",
+  "author": { "name": "Dheeraj Jha", "url": "https://github.com/dheerajjha" },
+  "homepage": "https://github.com/dheerajjha/margins",
+  "repository": "https://github.com/dheerajjha/margins",
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "margins",
+    "shortDescription": "Read markdown in your browser",
+    "developerName": "Dheeraj Jha",
+    "category": "Productivity",
+    "capabilities": ["Instructions"],
+    "websiteURL": "https://github.com/dheerajjha/margins",
+    "defaultPrompt": ["Open the docs in margins.", "Show me that plan in margins."]
+  }
+}

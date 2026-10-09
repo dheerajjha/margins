@@ -1,0 +1,9 @@
+{
+  "name": "margins",
+  "description": "Open a folder of markdown in your browser: plans, docs, notes.",
+  "version": "0.2.0",
+  "author": { "name": "Dheeraj Jha", "url": "https://github.com/dheerajjha" },
+  "homepage": "https://github.com/dheerajjha/margins",
+  "license": "MIT",
+  "skills": "skills/"
+}

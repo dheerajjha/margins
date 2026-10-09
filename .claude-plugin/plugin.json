@@ -1,0 +1,10 @@
+{
+  "name": "margins",
+  "version": "0.2.0",
+  "description": "Open a folder of markdown in your browser from the agent: the plan it wrote, a repository's docs, your notes. Tree, links, [[wikilinks]], backlinks, search and editing.",
+  "author": { "name": "Dheeraj Jha", "url": "https://github.com/dheerajjha" },
+  "homepage": "https://github.com/dheerajjha/margins",
+  "repository": "https://github.com/dheerajjha/margins",
+  "license": "MIT",
+  "keywords": ["markdown", "docs", "notes", "wikilinks", "reader"]
+}
