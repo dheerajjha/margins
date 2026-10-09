@@ -27,7 +27,7 @@ test('every plugin manifest carries the package version and one name', () => {
 });
 
 test('the read skill has the frontmatter agents need and only real flags', () => {
-  const text = fs.readFileSync(path.join(root, 'skills', 'read', 'SKILL.md'), 'utf8');
+  const text = fs.readFileSync(path.join(root, 'skills', 'read', 'SKILL.md'), 'utf8').replace(/\r\n/g, '\n');
   const fm = /^---\n([\s\S]*?)\n---\n/.exec(text);
   assert.ok(fm);
   assert.match(fm[1], /^name: read$/m);
