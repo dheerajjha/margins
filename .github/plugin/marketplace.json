@@ -1,0 +1,5 @@
+{
+  "name": "margins",
+  "owner": { "name": "Dheeraj Jha", "url": "https://github.com/dheerajjha" },
+  "plugins": [ { "name": "margins", "source": "./", "description": "Open a folder of markdown in your browser.", "skills": "skills/" } ]
+}

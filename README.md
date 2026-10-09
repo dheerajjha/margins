@@ -3,8 +3,10 @@
 [![CI](https://github.com/dheerajjha/margins/actions/workflows/ci.yml/badge.svg)](https://github.com/dheerajjha/margins/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](package.json)
-[![Tests](https://img.shields.io/badge/tests-87-brightgreen.svg)](test/)
+[![Tests](https://img.shields.io/badge/tests-89-brightgreen.svg)](test/)
 [![Dependencies](https://img.shields.io/badge/dependencies-2-brightgreen.svg)](package.json)
+
+**English** · [简体中文](docs/README.zh-CN.md) · [日本語](docs/README.ja.md)
 
 Open any folder of markdown in your browser, from the terminal. Browse it as a
 tree, read it rendered, follow the links between files — `[[wikilinks]]`
@@ -115,6 +117,31 @@ address yourself later. `Ctrl+C` stops it any time.
 | `[` `]` | Back and forward |
 | `?` | Every shortcut |
 
+## Use it from your agent
+
+Coding agents write a lot of markdown: plans, designs, reports, notes. Installed
+as a plugin, the agent opens it in margins for you instead of pasting it into
+the chat.
+
+```
+/plugin install margins --marketplace dheerajjha/margins
+```
+
+That is Claude Code; then ask it to open the plan or the docs in margins, or run
+`/margins:read docs/`. The same skill installs elsewhere:
+
+| Agent | Install |
+|---|---|
+| Codex CLI | `codex plugin marketplace add dheerajjha/margins`, then `codex plugin add margins@margins` |
+| Cursor | **Customize** → **From GitHub Repository** → `dheerajjha/margins` |
+| Copilot CLI | `copilot plugin marketplace add dheerajjha/margins`, then `copilot plugin install margins@margins` |
+| Anything else | `npx skills add dheerajjha/margins` |
+
+The skill is plain instructions, [skills/read/SKILL.md](skills/read/SKILL.md):
+start margins in the background on the folder or file, hand over the address if
+no browser opened, and re-read any file the user edits there before touching it
+again.
+
 ## How links are followed
 
 A **relative link** is resolved from the file it is in, as GitHub does:
@@ -207,7 +234,7 @@ The page is a client of this; nothing is hidden from you.
 ```bash
 git clone https://github.com/dheerajjha/margins.git
 cd margins && npm install
-npm test                    # 87 tests
+npm test                    # 89 tests
 node bin/margins.js ~/notes
 ```
 

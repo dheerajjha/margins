@@ -6,6 +6,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- margins installs as a plugin in Claude Code, Codex CLI, Cursor and Copilot
+  CLI, and as a skill everywhere else (`npx skills add dheerajjha/margins`), so
+  an agent can open the plan or docs it wrote in margins for you. Nothing in
+  the npm package changes; the plugin is installed from this repository.
+- Chinese and Japanese READMEs.
+
 ## [0.2.0] - 2026-10-06
 
 ### Added
