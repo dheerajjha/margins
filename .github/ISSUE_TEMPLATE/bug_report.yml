@@ -1,0 +1,43 @@
+name: Bug report
+description: Something behaved differently than you expected
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+      placeholder: A [[wikilink]] to a note in a subfolder opened an empty page.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The smallest folder that shows it. The file names and the markdown that matters are usually enough.
+      placeholder: |
+        mkdir -p repro/notes && cd repro
+        printf 'See [[notes/b]]\n' > a.md
+        printf '# B\n' > notes/b.md
+        npx margins .
+        # then click the link in a.md
+      render: shell
+    validations:
+      required: true
+
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Output of `margins --version` and `node --version`, plus your OS and browser.
+      placeholder: margins 0.2.0, node v22.11.0, macOS 15.1, Firefox 131
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Errors
+      description: Anything from the terminal, or from the browser's developer console.
+      render: shell

@@ -1,0 +1,31 @@
+name: Feature request
+description: Suggest something margins should do
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do
+      description: >
+        The folder you were reading and where margins got in the way. The
+        problem is more useful than a proposed solution, because there may be a
+        simpler way to solve it.
+      placeholder: My notes link to headings with [[note#heading]], and the link opens the top of the note.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you have in mind
+      description: Optional. If you already have a shape in mind, describe it.
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - label: This keeps margins local, with no account, no config file and no new dependency
+          required: false
+        - label: I'd be willing to open a pull request for this
+          required: false
