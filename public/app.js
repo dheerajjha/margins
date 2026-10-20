@@ -16,6 +16,19 @@
 
 // --- pure helpers (lifted out and tested in test/client.test.js) -----------
 
+/**
+ * A leading YAML front-matter block (--- … ---), split off from the body so
+ * it can be shown rather than rendered as a horizontal rule and a heading.
+ * A `---` anywhere but the very first line, or one with no closing line, is
+ * not front matter: frontMatter is null and body is the whole text.
+ */
+function splitFrontMatter(markdown) {
+  if (typeof markdown !== 'string') return { frontMatter: null, body: markdown };
+  var match = markdown.match(/^\uFEFF?---\r?\n((?:[\s\S]*?\r?\n)?)---[ \t]*(?:\r?\n|$)/);
+  if (!match) return { frontMatter: null, body: markdown };
+  return { frontMatter: match[1], body: markdown.slice(match[0].length) };
+}
+
 /** A path split into segments and encoded, for putting in a URL. */
 function encodePath(path) {
   return String(path).split('/').map(encodeURIComponent).join('/');
@@ -225,7 +238,7 @@ var wikilinkExtension = {
   },
   renderer: function (token) {
     var parsed = MarginsLinks.parseWikilink(token.inner);
-    var label = parsed.alias || (parsed.heading && !parsed.target ? parsed.heading : parsed.target) + (parsed.heading && parsed.target && !parsed.alias ? ' › ' + parsed.heading : '');
+    var label = parsed.alias || (parsed.heading && !parsed.target ? parsed.heading : parsed.target) + (parsed.heading && parsed.target && !parsed.alias ? ' âº ' + parsed.heading : '');
     var escape = function (text) {
       return String(text).replace(/[&<>"']/g, function (c) {
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -261,9 +274,24 @@ var PURIFY = {
  * pointed at the folder, headings given anchors.
  */
 function renderMarkdown(markdown, fromPath, target) {
-  var fragment = DOMPurify.sanitize(marked.parse(markdown), PURIFY);
+  var split = splitFrontMatter(markdown);
+  var fragment = DOMPurify.sanitize(marked.parse(split.body), PURIFY);
   adjustRendered(fragment, fromPath);
-  target.replaceChildren(fragment);
+  if (split.frontMatter === null) {
+    target.replaceChildren(fragment);
+    return;
+  }
+  // Show the metadata rather than dropping it: a collapsed block built as
+  // DOM nodes with textContent, never a string handed to the sanitiser.
+  var details = document.createElement('details');
+  details.className = 'front-matter';
+  var summary = document.createElement('summary');
+  summary.textContent = 'Front matter';
+  var pre = document.createElement('pre');
+  pre.textContent = split.frontMatter.replace(/\r?\n$/, '');
+  details.appendChild(summary);
+  details.appendChild(pre);
+  target.replaceChildren(details, fragment);
 }
 
 function adjustRendered(root, fromPath) {
@@ -373,7 +401,7 @@ function restoreExpanded() {
 }
 
 function fileIcon(kind) {
-  return kind === 'markdown' ? '¶' : kind === 'image' ? '▣' : '·';
+  return kind === 'markdown' ? 'Â¶' : kind === 'image' ? 'â£' : 'Â·';
 }
 
 /** Draw one folder's entries, and the folders below it that are open. */
@@ -398,7 +426,7 @@ function buildLevel(entries, depth) {
       var open = state.expanded.has(entry.path);
       row.type = 'button';
       row.setAttribute('aria-expanded', String(open));
-      icon.textContent = open ? '▾' : '▸';
+      icon.textContent = open ? 'â¾' : 'â¸';
       row.addEventListener('click', function () { toggleFolder(entry.path); });
       row.append(icon, name);
       item.appendChild(row);
@@ -532,7 +560,7 @@ function updateDocBar() {
 function renderCurrent(fragment) {
   var file = state.current;
   var doc = $('document');
-  document.title = (file.path ? file.path.split('/').pop() + ' — ' : '') + (state.info ? state.info.name : 'margins');
+  document.title = (file.path ? file.path.split('/').pop() + ' â ' : '') + (state.info ? state.info.name : 'margins');
 
   if (file.kind === 'markdown') {
     renderMarkdown(file.content, file.path, doc);
@@ -649,7 +677,7 @@ function showFolder(path) {
   renderBreadcrumbs(path);
   setVisible('editButton', false);
   $('saveState').textContent = '';
-  document.title = (path || (state.info ? state.info.name : '')) + ' — margins';
+  document.title = (path || (state.info ? state.info.name : '')) + ' â margins';
 
   return loadLevel(path).then(function (entries) {
     var doc = $('document');
@@ -782,7 +810,7 @@ function onSourceKeydown(event) {
 function save(overVersion) {
   if (!state.editing || !state.current) return;
   var content = $('source').value;
-  $('saveState').textContent = 'Saving…';
+  $('saveState').textContent = 'Savingâ¦';
 
   return sendJson('PUT', 'api/file', {
     path: state.current.path,
@@ -921,7 +949,7 @@ function renderQuickOpen() {
   if (paths.length === 0) {
     var none = document.createElement('li');
     none.className = 'result-none';
-    none.textContent = query ? 'No file matches “' + query + '”.' : 'No markdown files here.';
+    none.textContent = query ? 'No file matches â' + query + 'â.' : 'No markdown files here.';
     results.appendChild(none);
   }
   highlightQuick();
@@ -979,14 +1007,14 @@ function runSearch() {
   var summary = $('searchSummary');
   var results = $('searchResults');
   if (query.length < 2) {
-    summary.textContent = query ? 'Keep typing…' : '';
+    summary.textContent = query ? 'Keep typingâ¦' : '';
     results.replaceChildren();
     return;
   }
 
   // Answers can arrive out of order; only the latest question's is drawn.
   var sequence = ++searchSequence;
-  summary.textContent = 'Searching…';
+  summary.textContent = 'Searchingâ¦';
   api('api/search?q=' + encodeURIComponent(query)).then(function (result) {
     if (sequence !== searchSequence) return;
     results.replaceChildren();
@@ -1030,9 +1058,9 @@ function runSearch() {
 
     var files = byFile.size;
     summary.textContent = result.results.length === 0
-      ? 'Nothing matches “' + query + '” in ' + result.filesSearched + ' files.'
+      ? 'Nothing matches â' + query + 'â in ' + result.filesSearched + ' files.'
       : result.results.length + (result.truncated ? '+' : '') + ' matches in ' + files + ' file' + (files === 1 ? '' : 's') +
-        (result.truncated ? ' — showing the first ' + result.results.length + '.' : '.');
+        (result.truncated ? ' â showing the first ' + result.results.length + '.' : '.');
   }).catch(function (error) {
     if (sequence === searchSequence) summary.textContent = error.message;
   });
@@ -1125,12 +1153,12 @@ function onHashChange() {
   openRoute(parseRoute(location.hash));
 }
 
-/** Show ⌘ on a Mac and Ctrl elsewhere, in every shortcut hint on the page. */
+/** Show â on a Mac and Ctrl elsewhere, in every shortcut hint on the page. */
 function labelShortcuts() {
   var mac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
   document.querySelectorAll('kbd[data-mod]').forEach(function (kbd) {
     var key = kbd.textContent.trim();
-    kbd.textContent = (mac ? '⌘' : 'Ctrl+') + (kbd.hasAttribute('data-shift') ? (mac ? '⇧' : 'Shift+') : '') + key;
+    kbd.textContent = (mac ? 'â' : 'Ctrl+') + (kbd.hasAttribute('data-shift') ? (mac ? 'â§' : 'Shift+') : '') + key;
   });
 }
 
