@@ -6,6 +6,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Front matter at the top of a note is shown in a collapsed block instead of
+  rendering as a horizontal rule and a heading.
+
 ### Added
 
 - margins installs as a plugin in Claude Code, Codex CLI, Cursor and Copilot
@@ -52,7 +57,7 @@ The first release.
   aliases and image embeds, resolved by name.
 - Backlinks: every note lists the notes that link to it.
 - Editing with a live preview, and saving that refuses to overwrite a file
-  changed on disk since it was opened — by content hash, not timestamp.
+  changed on disk since it was opened â by content hash, not timestamp.
 - New notes from the sidebar, or by clicking a link to one that does not exist.
 - Open a file by name (`Ctrl/Cmd+P`) and search every file
   (`Ctrl/Cmd+Shift+F`).
