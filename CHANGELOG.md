@@ -6,10 +6,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-21
+
 ### Fixed
 
-- Front matter (including YAML `...` closer and CRLF) at the top of a note is shown in a collapsed block instead of
-  rendering as a horizontal rule and a heading.
+- **Front matter is shown, not rendered.** A note that opened with YAML front
+  matter (Obsidian properties, Jekyll, Hugo) showed it as a horizontal rule
+  and a heading, and the YAML became the first entry in the outline. It now
+  sits above the note in a collapsed block, as plain text. The block may close
+  with `---` or `...`, and Windows line endings work too. A `---` further
+  down is still a horizontal rule (#16, #20, from @wized2).
 
 ### Added
 
