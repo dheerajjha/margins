@@ -21,10 +21,12 @@
  * shown rather than rendered as a horizontal rule and a heading. A `---`
  * anywhere but the very first line, or one with no closing line, is not
  * front matter: frontMatter is null and body is the whole text.
+ * The closer may be `---` or YAML's document end `...` (Jekyll / Pandoc).
+ * Trailing spaces after the opener are allowed.
  */
 function splitFrontMatter(markdown) {
   if (typeof markdown !== 'string') return { frontMatter: null, body: markdown };
-  var match = markdown.match(/^\uFEFF?---\r?\n((?:[\s\S]*?\r?\n)?)---[ \t]*(?:\r?\n|$)/);
+  var match = markdown.match(/^\uFEFF?---[ \t]*\r?\n((?:[\s\S]*?\r?\n)?)(?:---|\.\.\.)[ \t]*(?:\r?\n|$)/);
   if (!match) return { frontMatter: null, body: markdown };
   return { frontMatter: match[1], body: markdown.slice(match[0].length) };
 }

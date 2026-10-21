@@ -8,7 +8,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
-- Front matter at the top of a note is shown in a collapsed block instead of
+- Front matter (including YAML `...` closer and CRLF) at the top of a note is shown in a collapsed block instead of
   rendering as a horizontal rule and a heading.
 
 ### Added

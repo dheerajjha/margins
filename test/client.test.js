@@ -53,6 +53,14 @@ test('front matter is split off the body, and a --- further down is left alone',
   assert.deepEqual(plain(splitFrontMatter('Intro\n\n---\n\nAfter break\n')), { frontMatter: null, body: 'Intro\n\n---\n\nAfter break\n' }, 'a thematic break lower down is not front matter');
   assert.deepEqual(plain(splitFrontMatter('# Just a heading\n')), { frontMatter: null, body: '# Just a heading\n' }, 'a file with no front matter is unchanged');
   assert.deepEqual(plain(splitFrontMatter('---\ntitle: x\nBody\n')), { frontMatter: null, body: '---\ntitle: x\nBody\n' }, 'no closing line means no front matter');
+  // YAML document end `...` is a valid closer (Jekyll / Pandoc)
+  const pandoc = plain(splitFrontMatter('---\ntitle: Pandoc style\n...\n\n# Body\n'));
+  assert.equal(pandoc.frontMatter, 'title: Pandoc style\n', 'closing with ... is front matter');
+  assert.equal(pandoc.body, '\n# Body\n');
+  // CRLF line endings (issue rule)
+  const crlf = plain(splitFrontMatter('---\r\ntitle: CRLF note\r\n---\r\n\r\n# Heading\r\n'));
+  assert.equal(crlf.frontMatter, 'title: CRLF note\r\n', 'CRLF front matter is recognised');
+  assert.equal(crlf.body, '\r\n# Heading\r\n');
 });
 
 test('open-a-file matches letters in order, and prefers what people mean', () => {
