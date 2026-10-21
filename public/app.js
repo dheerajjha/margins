@@ -16,6 +16,21 @@
 
 // --- pure helpers (lifted out and tested in test/client.test.js) -----------
 
+/**
+ * A leading YAML front-matter block, split off from the body so it can be
+ * shown rather than rendered as a horizontal rule and a heading. A `---`
+ * anywhere but the very first line, or one with no closing line, is not
+ * front matter: frontMatter is null and body is the whole text.
+ * The closer may be `---` or YAML's document end `...` (Jekyll / Pandoc).
+ * Trailing spaces after the opener are allowed.
+ */
+function splitFrontMatter(markdown) {
+  if (typeof markdown !== 'string') return { frontMatter: null, body: markdown };
+  var match = markdown.match(/^\uFEFF?---[ \t]*\r?\n((?:[\s\S]*?\r?\n)?)(?:---|\.\.\.)[ \t]*(?:\r?\n|$)/);
+  if (!match) return { frontMatter: null, body: markdown };
+  return { frontMatter: match[1], body: markdown.slice(match[0].length) };
+}
+
 /** A path split into segments and encoded, for putting in a URL. */
 function encodePath(path) {
   return String(path).split('/').map(encodeURIComponent).join('/');
@@ -261,9 +276,24 @@ var PURIFY = {
  * pointed at the folder, headings given anchors.
  */
 function renderMarkdown(markdown, fromPath, target) {
-  var fragment = DOMPurify.sanitize(marked.parse(markdown), PURIFY);
+  var split = splitFrontMatter(markdown);
+  var fragment = DOMPurify.sanitize(marked.parse(split.body), PURIFY);
   adjustRendered(fragment, fromPath);
-  target.replaceChildren(fragment);
+  if (split.frontMatter === null) {
+    target.replaceChildren(fragment);
+    return;
+  }
+  // Show the metadata rather than dropping it: a collapsed block built as
+  // DOM nodes with textContent, never a string handed to the sanitiser.
+  var details = document.createElement('details');
+  details.className = 'front-matter';
+  var summary = document.createElement('summary');
+  summary.textContent = 'Front matter';
+  var pre = document.createElement('pre');
+  pre.textContent = split.frontMatter.replace(/\r?\n$/, '');
+  details.appendChild(summary);
+  details.appendChild(pre);
+  target.replaceChildren(details, fragment);
 }
 
 function adjustRendered(root, fromPath) {

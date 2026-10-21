@@ -15,7 +15,7 @@ const vm = require('node:vm');
 const APP_JS = fs.readFileSync(path.join(__dirname, '..', 'public', 'app.js'), 'utf-8');
 const context = vm.createContext({ MarginsLinks: require('../lib/links') });
 
-for (const name of ['encodePath', 'hrefFor', 'rawUrl', 'parseRoute', 'fuzzyScore', 'rankFiles', 'shortcutFor', 'uniqueSlug', 'clampPanelWidth']) {
+for (const name of ['encodePath', 'hrefFor', 'rawUrl', 'parseRoute', 'fuzzyScore', 'rankFiles', 'shortcutFor', 'uniqueSlug', 'clampPanelWidth', 'splitFrontMatter']) {
   const match = APP_JS.match(new RegExp(`function ${name}\\([^)]*\\) \\{[\\s\\S]*?\\n\\}`));
   if (!match) throw new Error(`Could not find ${name} in app.js`);
   vm.runInContext(match[0], context);
@@ -42,6 +42,25 @@ test('a path segment with a # or ? in its name survives the round trip', () => {
 
 test('images are fetched from /raw with every segment encoded', () => {
   assert.equal(fn('rawUrl')('assets/a b#1.png'), 'raw/assets/a%20b%231.png');
+});
+
+test('front matter is split off the body, and a --- further down is left alone', () => {
+  const splitFrontMatter = fn('splitFrontMatter');
+  const split = plain(splitFrontMatter('---\ntitle: Weekly review\ntags: [work, review]\n---\n\n# Weekly review\n'));
+  assert.equal(split.frontMatter, 'title: Weekly review\ntags: [work, review]\n', 'the block is kept, not dropped');
+  assert.equal(split.body, '\n# Weekly review\n', 'the heading is the body');
+  assert.deepEqual(plain(splitFrontMatter('---\n---\n\nBody\n')), { frontMatter: '', body: '\nBody\n' }, 'an empty block is still front matter');
+  assert.deepEqual(plain(splitFrontMatter('Intro\n\n---\n\nAfter break\n')), { frontMatter: null, body: 'Intro\n\n---\n\nAfter break\n' }, 'a thematic break lower down is not front matter');
+  assert.deepEqual(plain(splitFrontMatter('# Just a heading\n')), { frontMatter: null, body: '# Just a heading\n' }, 'a file with no front matter is unchanged');
+  assert.deepEqual(plain(splitFrontMatter('---\ntitle: x\nBody\n')), { frontMatter: null, body: '---\ntitle: x\nBody\n' }, 'no closing line means no front matter');
+  // YAML document end `...` is a valid closer (Jekyll / Pandoc)
+  const pandoc = plain(splitFrontMatter('---\ntitle: Pandoc style\n...\n\n# Body\n'));
+  assert.equal(pandoc.frontMatter, 'title: Pandoc style\n', 'closing with ... is front matter');
+  assert.equal(pandoc.body, '\n# Body\n');
+  // CRLF line endings (issue rule)
+  const crlf = plain(splitFrontMatter('---\r\ntitle: CRLF note\r\n---\r\n\r\n# Heading\r\n'));
+  assert.equal(crlf.frontMatter, 'title: CRLF note\r\n', 'CRLF front matter is recognised');
+  assert.equal(crlf.body, '\r\n# Heading\r\n');
 });
 
 test('open-a-file matches letters in order, and prefers what people mean', () => {
