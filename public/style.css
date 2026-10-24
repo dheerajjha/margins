@@ -468,6 +468,27 @@ body.resizing * {
   border-left: 0.25em solid var(--border);
 }
 
+.markdown-body blockquote.callout {
+  padding: 0.75em 1em;
+  border: 1px solid var(--callout-border, var(--border));
+  border-left: 0.25em solid var(--callout-accent, var(--border));
+  border-radius: 6px;
+  background: var(--callout-bg, var(--bg-subtle));
+}
+.callout-title { margin-bottom: 0.35em; color: var(--callout-accent, var(--fg)); font-weight: 600; }
+.callout-note { --callout-accent: #0969da; --callout-border: #54aeff66; --callout-bg: #ddf4ff; }
+.callout-tip { --callout-accent: #1a7f37; --callout-border: #4ac26b66; --callout-bg: #dafbe1; }
+.callout-important { --callout-accent: #8250df; --callout-border: #a475f966; --callout-bg: #fbefff; }
+.callout-warning { --callout-accent: #9a6700; --callout-border: #d4a72c66; --callout-bg: #fff8c5; }
+.callout-caution { --callout-accent: #cf222e; --callout-border: #ff818266; --callout-bg: #ffebe9; }
+@media (prefers-color-scheme: dark) {
+  .callout-note { --callout-accent: #4493f8; --callout-border: #4493f866; --callout-bg: #122d4f; }
+  .callout-tip { --callout-accent: #3fb950; --callout-border: #3fb95066; --callout-bg: #12261e; }
+  .callout-important { --callout-accent: #ab7df8; --callout-border: #ab7df866; --callout-bg: #241a36; }
+  .callout-warning { --callout-accent: #d29922; --callout-border: #d2992266; --callout-bg: #2b230f; }
+  .callout-caution { --callout-accent: #f85149; --callout-border: #f8514966; --callout-bg: #2d1618; }
+}
+
 .markdown-body code {
   padding: 0.2em 0.4em;
   font: 85% var(--mono);
