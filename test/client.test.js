@@ -15,7 +15,7 @@ const vm = require('node:vm');
 const APP_JS = fs.readFileSync(path.join(__dirname, '..', 'public', 'app.js'), 'utf-8');
 const context = vm.createContext({ MarginsLinks: require('../lib/links') });
 
-for (const name of ['encodePath', 'hrefFor', 'rawUrl', 'parseRoute', 'fuzzyScore', 'rankFiles', 'shortcutFor', 'uniqueSlug', 'clampPanelWidth', 'splitFrontMatter']) {
+for (const name of ['encodePath', 'hrefFor', 'rawUrl', 'parseRoute', 'fuzzyScore', 'rankFiles', 'shortcutFor', 'uniqueSlug', 'clampPanelWidth', 'splitFrontMatter', 'parseCalloutMarker']) {
   const match = APP_JS.match(new RegExp(`function ${name}\\([^)]*\\) \\{[\\s\\S]*?\\n\\}`));
   if (!match) throw new Error(`Could not find ${name} in app.js`);
   vm.runInContext(match[0], context);
@@ -61,6 +61,14 @@ test('front matter is split off the body, and a --- further down is left alone',
   const crlf = plain(splitFrontMatter('---\r\ntitle: CRLF note\r\n---\r\n\r\n# Heading\r\n'));
   assert.equal(crlf.frontMatter, 'title: CRLF note\r\n', 'CRLF front matter is recognised');
   assert.equal(crlf.body, '\r\n# Heading\r\n');
+});
+
+test('callout markers accept GitHub and Obsidian forms without catching ordinary bracket quotes', () => {
+  const parse = fn('parseCalloutMarker');
+  assert.deepEqual(plain(parse('[!NOTE]\nUseful information')), { type: 'note', title: 'Note', fold: null });
+  assert.deepEqual(plain(parse('[!note] Custom title\nUseful information')), { type: 'note', title: 'Custom title', fold: null });
+  assert.deepEqual(plain(parse('[!note]-\nFolded')), { type: 'note', title: 'Note', fold: '-' });
+  assert.equal(parse('[ordinary] quote'), null);
 });
 
 test('open-a-file matches letters in order, and prefers what people mean', () => {
