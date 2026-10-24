@@ -15,7 +15,7 @@ const vm = require('node:vm');
 const APP_JS = fs.readFileSync(path.join(__dirname, '..', 'public', 'app.js'), 'utf-8');
 const context = vm.createContext({ MarginsLinks: require('../lib/links') });
 
-for (const name of ['encodePath', 'hrefFor', 'rawUrl', 'parseRoute', 'fuzzyScore', 'rankFiles', 'shortcutFor', 'uniqueSlug', 'clampPanelWidth', 'splitFrontMatter']) {
+for (const name of ['encodePath', 'hrefFor', 'rawUrl', 'parseRoute', 'fuzzyScore', 'rankFiles', 'shortcutFor', 'uniqueSlug', 'clampPanelWidth', 'splitFrontMatter', 'highlightMatch']) {
   const match = APP_JS.match(new RegExp(`function ${name}\\([^)]*\\) \\{[\\s\\S]*?\\n\\}`));
   if (!match) throw new Error(`Could not find ${name} in app.js`);
   vm.runInContext(match[0], context);
@@ -61,6 +61,16 @@ test('front matter is split off the body, and a --- further down is left alone',
   const crlf = plain(splitFrontMatter('---\r\ntitle: CRLF note\r\n---\r\n\r\n# Heading\r\n'));
   assert.equal(crlf.frontMatter, 'title: CRLF note\r\n', 'CRLF front matter is recognised');
   assert.equal(crlf.body, '\r\n# Heading\r\n');
+});
+
+test('highlight markers match only non-space bounded content', () => {
+  const highlightMatch = fn('highlightMatch');
+  assert.equal(highlightMatch('==a==')[1], 'a');
+  assert.equal(highlightMatch('==**a**==')[1], '**a**');
+  assert.equal(highlightMatch('a == b == c'), null);
+  assert.equal(highlightMatch('== a=='), null);
+  assert.equal(highlightMatch('==a =='), null);
+  assert.equal(highlightMatch('==a='), null);
 });
 
 test('open-a-file matches letters in order, and prefers what people mean', () => {
