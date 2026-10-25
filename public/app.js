@@ -170,6 +170,13 @@ function parseCalloutMarker(text) {
   return { type: type, title: title, fold: match[2] || null };
 }
 
+/** Remove the marker line without flattening inline nodes in the callout body. */
+function removeCalloutMarker(paragraph) {
+  var first = paragraph.firstChild;
+  if (!first || first.nodeType !== 3) return;
+  first.textContent = first.textContent.replace(/^[^\r\n]*(?:\r?\n|$)/, '');
+}
+
 // --- state ---------------------------------------------------------------
 
 var state = {
@@ -312,8 +319,7 @@ function adjustRendered(root, fromPath) {
     if (!paragraph || paragraph.parentElement !== quote) return;
     var marker = parseCalloutMarker(paragraph.textContent);
     if (!marker) return;
-    var lines = paragraph.textContent.split(/\r?\n/);
-    paragraph.textContent = lines.slice(1).join('\n');
+    removeCalloutMarker(paragraph);
     var title = document.createElement('div');
     title.className = 'callout-title';
     title.textContent = marker.title;
