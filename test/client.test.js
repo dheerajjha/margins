@@ -72,18 +72,38 @@ test('callout markers accept GitHub and Obsidian forms without catching ordinary
 });
 
 test('removing a callout marker preserves body text and inline link nodes', () => {
-  const text = { nodeType: 3, textContent: '[!NOTE]\nRead ' };
+  const marker = { nodeType: 3, textContent: '[!NOTE]\nRead ' };
   const link = { nodeType: 1, tagName: 'A', textContent: 'the guide' };
-  const paragraph = { firstChild: text, childNodes: [text, link] };
+  const paragraph = mockParagraph([marker, link]);
 
   fn('removeCalloutMarker')(paragraph);
 
-  assert.equal(text.textContent, 'Read ');
-  assert.equal(paragraph.firstChild, text);
-  assert.deepEqual(paragraph.childNodes, [text, link]);
+  assert.equal(marker.textContent, 'Read ');
+  assert.deepEqual(paragraph.childNodes, [marker, link]);
   assert.equal(link.tagName, 'A');
   assert.equal(link.textContent, 'the guide');
 });
+
+test('removing a callout marker preserves markup inside a custom title', () => {
+  const marker = { nodeType: 3, textContent: '[!tip]- Folded ' };
+  const strong = { nodeType: 1, tagName: 'STRONG', textContent: 'title' };
+  const tail = { nodeType: 3, textContent: ' here\nBody.' };
+  const paragraph = mockParagraph([marker, strong, tail]);
+
+  fn('removeCalloutMarker')(paragraph);
+
+  assert.deepEqual(paragraph.childNodes, [tail]);
+  assert.equal(tail.textContent, 'Body.');
+});
+
+function mockParagraph(children) {
+  return {
+    childNodes: children.slice(),
+    removeChild(node) {
+      this.childNodes.splice(this.childNodes.indexOf(node), 1);
+    }
+  };
+}
 
 test('open-a-file matches letters in order, and prefers what people mean', () => {
   const rankFiles = fn('rankFiles');

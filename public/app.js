@@ -172,9 +172,19 @@ function parseCalloutMarker(text) {
 
 /** Remove the marker line without flattening inline nodes in the callout body. */
 function removeCalloutMarker(paragraph) {
-  var first = paragraph.firstChild;
-  if (!first || first.nodeType !== 3) return;
-  first.textContent = first.textContent.replace(/^[^\r\n]*(?:\r?\n|$)/, '');
+  var nodes = Array.from(paragraph.childNodes);
+  for (var i = 0; i < nodes.length; i++) {
+    var node = nodes[i];
+    if (node.nodeType === 3) {
+      var newline = node.textContent.search(/[\r\n]/);
+      if (newline !== -1) {
+        var lineEnd = newline + (node.textContent.slice(newline, newline + 2) === '\r\n' ? 2 : 1);
+        node.textContent = node.textContent.slice(lineEnd);
+        return;
+      }
+    }
+    paragraph.removeChild(node);
+  }
 }
 
 // --- state ---------------------------------------------------------------
