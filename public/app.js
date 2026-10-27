@@ -160,6 +160,33 @@ function clampPanelWidth(width, min, max) {
   return Math.round(Math.min(Math.max(value, min), Math.max(min, max)));
 }
 
+/** Parse an alert or Obsidian callout marker at the start of a quote. */
+function parseCalloutMarker(text) {
+  var match = String(text).match(/^\[!([a-z][a-z0-9_-]*)\]([+-])?(?:[ \t]+([^\r\n]*))?(?:\r?\n|$)/i);
+  if (!match) return null;
+  var type = match[1].toLowerCase();
+  var title = (match[3] || '').trim();
+  if (!title) title = type.charAt(0).toUpperCase() + type.slice(1);
+  return { type: type, title: title, fold: match[2] || null };
+}
+
+/** Remove the marker line without flattening inline nodes in the callout body. */
+function removeCalloutMarker(paragraph) {
+  var nodes = Array.from(paragraph.childNodes);
+  for (var i = 0; i < nodes.length; i++) {
+    var node = nodes[i];
+    if (node.nodeType === 3) {
+      var newline = node.textContent.search(/[\r\n]/);
+      if (newline !== -1) {
+        var lineEnd = newline + (node.textContent.slice(newline, newline + 2) === '\r\n' ? 2 : 1);
+        node.textContent = node.textContent.slice(lineEnd);
+        return;
+      }
+    }
+    paragraph.removeChild(node);
+  }
+}
+
 // --- state ---------------------------------------------------------------
 
 var state = {
@@ -297,6 +324,20 @@ function renderMarkdown(markdown, fromPath, target) {
 }
 
 function adjustRendered(root, fromPath) {
+  root.querySelectorAll('blockquote').forEach(function (quote) {
+    var paragraph = quote.querySelector('p');
+    if (!paragraph || paragraph.parentElement !== quote) return;
+    var marker = parseCalloutMarker(paragraph.textContent);
+    if (!marker) return;
+    removeCalloutMarker(paragraph);
+    var title = document.createElement('div');
+    title.className = 'callout-title';
+    title.textContent = marker.title;
+    quote.classList.add('callout', 'callout-' + marker.type);
+    quote.insertBefore(title, paragraph);
+    if (!paragraph.textContent.trim()) paragraph.remove();
+  });
+
   root.querySelectorAll('a[data-wikilink]').forEach(function (anchor) {
     var parsed = MarginsLinks.parseWikilink(anchor.getAttribute('data-wikilink'));
     var path = parsed.target ? MarginsLinks.resolveWikilink(parsed.target, fromPath, state.index) : fromPath;

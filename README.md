@@ -3,7 +3,7 @@
 [![CI](https://github.com/dheerajjha/margins/actions/workflows/ci.yml/badge.svg)](https://github.com/dheerajjha/margins/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](package.json)
-[![Tests](https://img.shields.io/badge/tests-90-brightgreen.svg)](test/)
+[![Tests](https://img.shields.io/badge/tests-93-brightgreen.svg)](test/)
 [![Dependencies](https://img.shields.io/badge/dependencies-2-brightgreen.svg)](package.json)
 
 **English** · [简体中文](docs/README.zh-CN.md) · [日本語](docs/README.ja.md)
@@ -234,7 +234,7 @@ The page is a client of this; nothing is hidden from you.
 ```bash
 git clone https://github.com/dheerajjha/margins.git
 cd margins && npm install
-npm test                    # 90 tests
+npm test                    # 93 tests
 node bin/margins.js ~/notes
 ```
 

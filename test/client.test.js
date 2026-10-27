@@ -15,7 +15,7 @@ const vm = require('node:vm');
 const APP_JS = fs.readFileSync(path.join(__dirname, '..', 'public', 'app.js'), 'utf-8');
 const context = vm.createContext({ MarginsLinks: require('../lib/links') });
 
-for (const name of ['encodePath', 'hrefFor', 'rawUrl', 'parseRoute', 'fuzzyScore', 'rankFiles', 'shortcutFor', 'uniqueSlug', 'clampPanelWidth', 'splitFrontMatter']) {
+for (const name of ['encodePath', 'hrefFor', 'rawUrl', 'parseRoute', 'fuzzyScore', 'rankFiles', 'shortcutFor', 'uniqueSlug', 'clampPanelWidth', 'splitFrontMatter', 'parseCalloutMarker', 'removeCalloutMarker']) {
   const match = APP_JS.match(new RegExp(`function ${name}\\([^)]*\\) \\{[\\s\\S]*?\\n\\}`));
   if (!match) throw new Error(`Could not find ${name} in app.js`);
   vm.runInContext(match[0], context);
@@ -62,6 +62,48 @@ test('front matter is split off the body, and a --- further down is left alone',
   assert.equal(crlf.frontMatter, 'title: CRLF note\r\n', 'CRLF front matter is recognised');
   assert.equal(crlf.body, '\r\n# Heading\r\n');
 });
+
+test('callout markers accept GitHub and Obsidian forms without catching ordinary bracket quotes', () => {
+  const parse = fn('parseCalloutMarker');
+  assert.deepEqual(plain(parse('[!NOTE]\nUseful information')), { type: 'note', title: 'Note', fold: null });
+  assert.deepEqual(plain(parse('[!note] Custom title\nUseful information')), { type: 'note', title: 'Custom title', fold: null });
+  assert.deepEqual(plain(parse('[!note]-\nFolded')), { type: 'note', title: 'Note', fold: '-' });
+  assert.equal(parse('[ordinary] quote'), null);
+});
+
+test('removing a callout marker preserves body text and inline link nodes', () => {
+  const marker = { nodeType: 3, textContent: '[!NOTE]\nRead ' };
+  const link = { nodeType: 1, tagName: 'A', textContent: 'the guide' };
+  const paragraph = mockParagraph([marker, link]);
+
+  fn('removeCalloutMarker')(paragraph);
+
+  assert.equal(marker.textContent, 'Read ');
+  assert.deepEqual(paragraph.childNodes, [marker, link]);
+  assert.equal(link.tagName, 'A');
+  assert.equal(link.textContent, 'the guide');
+});
+
+test('removing a callout marker preserves markup inside a custom title', () => {
+  const marker = { nodeType: 3, textContent: '[!tip]- Folded ' };
+  const strong = { nodeType: 1, tagName: 'STRONG', textContent: 'title' };
+  const tail = { nodeType: 3, textContent: ' here\nBody.' };
+  const paragraph = mockParagraph([marker, strong, tail]);
+
+  fn('removeCalloutMarker')(paragraph);
+
+  assert.deepEqual(paragraph.childNodes, [tail]);
+  assert.equal(tail.textContent, 'Body.');
+});
+
+function mockParagraph(children) {
+  return {
+    childNodes: children.slice(),
+    removeChild(node) {
+      this.childNodes.splice(this.childNodes.indexOf(node), 1);
+    }
+  };
+}
 
 test('open-a-file matches letters in order, and prefers what people mean', () => {
   const rankFiles = fn('rankFiles');
