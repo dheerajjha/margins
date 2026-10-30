@@ -454,6 +454,7 @@ body.resizing * {
 .markdown-body a:hover { text-decoration: underline; }
 
 .markdown-body .wikilink { border-bottom: 1px dashed currentColor; }
+.markdown-body mark { background: var(--mark); color: inherit; }
 .markdown-body .wikilink:hover { text-decoration: none; border-bottom-style: solid; }
 .markdown-body .wikilink-missing { color: var(--missing); }
 .markdown-body .link-broken { color: var(--fg-muted); text-decoration: line-through; cursor: not-allowed; }

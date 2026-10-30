@@ -15,7 +15,7 @@ const vm = require('node:vm');
 const APP_JS = fs.readFileSync(path.join(__dirname, '..', 'public', 'app.js'), 'utf-8');
 const context = vm.createContext({ MarginsLinks: require('../lib/links') });
 
-for (const name of ['encodePath', 'hrefFor', 'rawUrl', 'parseRoute', 'fuzzyScore', 'rankFiles', 'shortcutFor', 'uniqueSlug', 'clampPanelWidth', 'splitFrontMatter', 'parseCalloutMarker', 'removeCalloutMarker']) {
+for (const name of ['encodePath', 'hrefFor', 'rawUrl', 'parseRoute', 'fuzzyScore', 'rankFiles', 'shortcutFor', 'uniqueSlug', 'clampPanelWidth', 'splitFrontMatter', 'highlightMatch', 'parseCalloutMarker', 'removeCalloutMarker']) {
   const match = APP_JS.match(new RegExp(`function ${name}\\([^)]*\\) \\{[\\s\\S]*?\\n\\}`));
   if (!match) throw new Error(`Could not find ${name} in app.js`);
   vm.runInContext(match[0], context);
@@ -104,6 +104,16 @@ function mockParagraph(children) {
     }
   };
 }
+
+test('highlight markers match only non-space bounded content', () => {
+  const highlightMatch = fn('highlightMatch');
+  assert.equal(highlightMatch('==a==')[1], 'a');
+  assert.equal(highlightMatch('==**a**==')[1], '**a**');
+  assert.equal(highlightMatch('a == b == c'), null);
+  assert.equal(highlightMatch('== a=='), null);
+  assert.equal(highlightMatch('==a =='), null);
+  assert.equal(highlightMatch('==a='), null);
+});
 
 test('open-a-file matches letters in order, and prefers what people mean', () => {
   const rankFiles = fn('rankFiles');
