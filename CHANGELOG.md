@@ -6,6 +6,23 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-30
+
+### Added
+
+- **GitHub alerts and Obsidian callouts render as callouts.** `> [!NOTE]`,
+  `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]` and `> [!CAUTION]` get a title
+  and their own colours in the light and dark themes, and Obsidian's custom
+  titles (`> [!tip] Before you start`) work too. Links, inline code and
+  wikilinks inside a callout keep working. Before, the quote showed the raw
+  `[!NOTE]` marker (#17, #22, from @jay23606).
+
+### Security
+
+- DOMPurify 3.4.17 (#23). It fixes GHSA-cg2g-xh64-v4q7, a `SAFE_FOR_TEMPLATES`
+  bypass. margins doesn't use that option, and its `^3.4.16` range already let a
+  fresh install pick up the fix.
+
 ## [0.3.0] - 2026-10-21
 
 ### Fixed
@@ -76,7 +93,9 @@ The first release.
   symlinks, `.git` and `node_modules` never opened, and refusal of requests
   from other websites or other host names.
 
-[Unreleased]: https://github.com/dheerajjha/margins/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/dheerajjha/margins/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/dheerajjha/margins/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/dheerajjha/margins/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/dheerajjha/margins/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/dheerajjha/margins/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/dheerajjha/margins/releases/tag/v0.1.0
