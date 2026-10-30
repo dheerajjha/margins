@@ -187,6 +187,11 @@ function removeCalloutMarker(paragraph) {
   }
 }
 
+/** Match a highlight opener only when both edges touch non-space content. */
+function highlightMatch(src) {
+  return /^==(\S(?:[\s\S]*?\S)?)==/.exec(src);
+}
+
 // --- state ---------------------------------------------------------------
 
 var state = {
@@ -278,7 +283,24 @@ var wikilinkExtension = {
   }
 };
 
-marked.use({ gfm: true, extensions: [wikilinkExtension] });
+var highlightExtension = {
+  name: 'highlight',
+  level: 'inline',
+  start: function (src) {
+    var at = src.indexOf('==');
+    return at === -1 ? undefined : at;
+  },
+  tokenizer: function (src) {
+    var match = highlightMatch(src);
+    if (!match) return undefined;
+    return { type: 'highlight', raw: match[0], tokens: this.lexer.inlineTokens(match[1]) };
+  },
+  renderer: function (token) {
+    return '<mark>' + this.parser.parseInline(token.tokens) + '</mark>';
+  }
+};
+
+marked.use({ gfm: true, extensions: [wikilinkExtension, highlightExtension] });
 
 // What sanitising allows through. HTML is allowed in markdown and READMEs
 // use it -- <details>, <kbd>, <img width>, <picture> -- so it is not
