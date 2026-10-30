@@ -5,11 +5,12 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
-const { marked } = require('marked');
 
 const APP_JS = fs.readFileSync(path.join(__dirname, '..', 'public', 'app.js'), 'utf-8');
 
-test('the Markdown extension renders highlights and preserves inline parsing', () => {
+test('the Markdown extension renders highlights and preserves inline parsing', async () => {
+  // marked 18 is ESM-only; require() of it fails on Node 18, so load it with import().
+  const { marked } = await import('marked');
   const matcher = APP_JS.match(/function highlightMatch\([^)]*\) \{[\s\S]*?\n\}/);
   const extension = APP_JS.match(/var highlightExtension = \{[\s\S]*?\n\};/);
   assert.ok(matcher, 'app.js defines the highlight matcher');
