@@ -3,6 +3,6 @@
   "description": "Read the markdown your agent writes, in your browser.",
   "owner": { "name": "Dheeraj Jha", "url": "https://github.com/dheerajjha" },
   "plugins": [
-    { "name": "margins", "source": "./", "description": "Open a folder of markdown in your browser: plans, docs, notes.", "version": "0.4.0", "category": "productivity" }
+    { "name": "margins", "source": "./", "description": "Open a folder of markdown in your browser: plans, docs, notes.", "version": "0.5.0", "category": "productivity" }
   ]
 }

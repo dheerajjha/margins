@@ -6,6 +6,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-31
+
+### Added
+
+- **Obsidian highlights.** `==text==` renders as a highlight in the light and
+  dark themes, and formatting inside it, such as bold, still works. As in
+  Obsidian, it needs text right inside both markers, so `a == b` stays plain,
+  and code spans keep their equals signs (#18, #26, from @jay23606).
+
 ## [0.4.0] - 2026-10-30
 
 ### Added
@@ -93,7 +102,8 @@ The first release.
   symlinks, `.git` and `node_modules` never opened, and refusal of requests
   from other websites or other host names.
 
-[Unreleased]: https://github.com/dheerajjha/margins/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/dheerajjha/margins/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/dheerajjha/margins/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/dheerajjha/margins/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/dheerajjha/margins/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/dheerajjha/margins/compare/v0.1.1...v0.2.0

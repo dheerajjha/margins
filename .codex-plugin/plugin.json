@@ -1,6 +1,6 @@
 {
   "name": "margins",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Open a folder of markdown in your browser: the plan the agent wrote, a repository's docs, your notes.",
   "author": { "name": "Dheeraj Jha", "url": "https://github.com/dheerajjha" },
   "homepage": "https://github.com/dheerajjha/margins",
